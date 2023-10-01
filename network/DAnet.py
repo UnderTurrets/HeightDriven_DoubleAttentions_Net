@@ -93,7 +93,7 @@ class DAnet(nn.Module):
             resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
         )
-        self.decoder = DAHead.DAHead(in_channels=2048, num_classes=num_classes)
+        self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
 
     def forward(self, x):
         feats = self.ResNet50(x)
@@ -107,3 +107,4 @@ if __name__ == "__main__":
     model = DAnet(num_classes=3)
     result = model(x)
     print(result.shape)
+    print(model)

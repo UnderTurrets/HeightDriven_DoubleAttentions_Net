@@ -65,11 +65,12 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df['train_acc'] = train_acc_list
         df['test_acc'] = test_acc_list
         df['time'] = time_list
-        df.to_excel("savefile/DAnet_camvid.xlsx")
+        df.to_excel("../res/DAnet_camvid.xlsx")
         # ----------------保存模型-------------------
         if np.mod(epoch + 1, 5) == 0:
             torch.save(model.state_dict(), f'checkpoints/DAnet_{epoch + 1}.pth')
 
 
-from db.camvid import train_loader,val_loader
-train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num,scheduler)
+if __name__ == "__main__":
+    from db.camvid import train_loader,val_loader
+    train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num,scheduler)
