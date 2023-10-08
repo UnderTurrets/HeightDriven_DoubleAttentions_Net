@@ -4,9 +4,9 @@ import torch.optim as optim
 import numpy as np
 import pandas as pd
 
-import network.DAnet
-model = network.DAnet.DAnet(num_classes=33).cuda()
-#model.load_state_dict(torch.load(r"checkpoints/resnet101-5d3b4d8f.pth"),strict=False)
+import network.HDAnet as net
+model = net.DAnet(num_classes=33).cuda()
+model.load_state_dict(torch.load(r"checkpoints/HDAnet_1.pth"),strict=False)
 
 from d2l import torch as d2l
 
@@ -68,7 +68,7 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df.to_excel("../res/DAnet_camvid.xlsx")
         # ----------------保存模型-------------------
         if np.mod(epoch + 1, 5) == 0:
-            torch.save(model.state_dict(), f'checkpoints/DAnet_{epoch + 1}.pth')
+            torch.save(model.state_dict(), f'checkpoints/HDAnet_{epoch + 1}.pth')
 
 
 if __name__ == "__main__":

@@ -84,7 +84,7 @@ setup(
 
     # 安装过程中，需要安装的静态文件，如配置文件、service文件、图片等
     # data_files=[
-    #     ("", ["conf/*.conf"]),
+    #     ("", ["checkpoints/*.checkpoints"]),
     #     ("/usr/lib/systemd/system/", ["bin/*.service"]),
     #            ],
 

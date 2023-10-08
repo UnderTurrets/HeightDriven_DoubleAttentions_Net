@@ -83,6 +83,7 @@ class DAHead(nn.Module):
         output = self.conv3(PosionAttentionMap + ChannelAttentionMap)
         output = nn.functional.interpolate(output, scale_factor=8, mode="bilinear", align_corners=True)
         output = self.conv4(output)
+
         return output
 
 
