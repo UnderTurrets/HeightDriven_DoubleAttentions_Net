@@ -1,7 +1,29 @@
 from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
-import torch.nn as nn
+from network.HANet import HANet_Conv
+def initialize_weights(*models):
+    """
+    Initialize Model Weights
+    """
+    for model in models:
+        for module in model.modules():
+            if isinstance(module, (nn.Conv2d, nn.Linear)):
+                nn.init.kaiming_normal_(module.weight, nonlinearity='relu')
+                if module.bias is not None:
+                    module.bias.data.zero_()
+            elif isinstance(module, nn.Conv1d):
+                nn.init.kaiming_normal_(module.weight, nonlinearity='relu')
+                if module.bias is not None:
+                    module.bias.data.zero_()
+            elif isinstance(module, nn.BatchNorm2d) or isinstance(module, nn.BatchNorm1d) or \
+                isinstance(module, nn.GroupNorm) or isinstance(module, nn.SyncBatchNorm):
+                module.weight.data.fill_(1)
+                module.bias.data.zero_()
+
 import torch
+import torch.nn as nn
+
+gpu = torch.device("cuda")
 
 class PositionAttention(nn.Module):
     def __init__(self, in_channels):
@@ -27,6 +49,7 @@ class PositionAttention(nn.Module):
         return E
 
 
+
 class ChannelAttention(nn.Module):
     def __init__(self):
         super(ChannelAttention, self).__init__()
@@ -40,6 +63,7 @@ class ChannelAttention(nn.Module):
         X = torch.matmul(X.transpose(1, 2), x.view(b, c, h * w)).view(b, c, h, w)
         X = self.beta * X + x
         return X
+
 
 
 class DAHead(nn.Module):
@@ -86,7 +110,6 @@ class DAHead(nn.Module):
 
         return output
 
-
 class DAnet(nn.Module):
     def __init__(self, num_classes):
         super(DAnet, self).__init__()
@@ -94,18 +117,28 @@ class DAnet(nn.Module):
             resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
         )
+
+
         self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
+
+        self.HANet_Conv = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
+                                     r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                     pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
 
     def forward(self, x):
         feats = self.ResNet50(x)
         # self.ResNet50返回的是一个字典类型的数据.
-        x = self.decoder(feats["stage4"])
+        x = feats["stage4"]
+        represent=x
+        x = self.decoder(x)
+        x = self.HANet_Conv(represent, x)
+
         return x
 
 
 if __name__ == "__main__":
-    x = torch.randn(3, 3, 224, 224).cpu()
-    model = DAnet(num_classes=3)
+    x = torch.randn(3, 3, 224, 224).to(gpu)
+    model = DAnet(num_classes=3).to(gpu)
     result = model(x)
     print(result.shape)
     print(model)

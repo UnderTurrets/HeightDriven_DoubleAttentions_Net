@@ -1,3 +1,5 @@
+import os.path
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -6,7 +8,7 @@ import pandas as pd
 
 import network.HDAnet as net
 model = net.DAnet(num_classes=33).cuda()
-model.load_state_dict(torch.load(r"checkpoints/HDAnet_1.pth"),strict=False)
+if(os.path.exists(r"../checkpoints/HDAnet_1.pth")):model.load_state_dict(torch.load(r"../checkpoints/HDAnet_1.pth"),strict=False)
 
 from d2l import torch as d2l
 
@@ -46,6 +48,11 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
                 animator.add(epoch + (i + 1) / num_batches,
                              (metric[0] / metric[2], metric[1] / metric[3],
                               None))
+
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\t'.format(
+                    epoch, i * len(features), len(train_iter.dataset),
+                               100. * i / len(train_iter)))
+
         test_acc = d2l.evaluate_accuracy_gpu(net, test_iter)
         animator.add(epoch + 1, (None, None, test_acc))
         scheduler.step()

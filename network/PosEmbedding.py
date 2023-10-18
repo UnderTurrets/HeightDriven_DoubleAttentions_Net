@@ -1,8 +1,15 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from network.mynn import Norm2d, Upsample, initialize_embedding
 import numpy as np
+
+def initialize_embedding(*models):
+    """
+    Initialize Model Weights
+    """
+    for model in models:
+        for module in model.modules():
+            if isinstance(module, nn.Embedding):
+                module.weight.data.zero_() #original
 
 def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
     ''' Sinusoid position encoding table '''
