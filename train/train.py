@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 import network.HDAnet as net
-model = net.DAnet(num_classes=33).cuda()
+model = net.HDAnet(num_classes=33).cuda()
 if(os.path.exists(r"../checkpoints/HDAnet_1.pth")):model.load_state_dict(torch.load(r"../checkpoints/HDAnet_1.pth"),strict=False)
 
 from d2l import torch as d2l

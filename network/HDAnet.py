@@ -110,9 +110,9 @@ class DAHead(nn.Module):
 
         return output
 
-class DAnet(nn.Module):
+class HDAnet(nn.Module):
     def __init__(self, num_classes):
-        super(DAnet, self).__init__()
+        super(HDAnet, self).__init__()
         self.ResNet50 = IntermediateLayerGetter(
             resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
@@ -138,7 +138,7 @@ class DAnet(nn.Module):
 
 if __name__ == "__main__":
     x = torch.randn(3, 3, 224, 224).to(gpu)
-    model = DAnet(num_classes=3).to(gpu)
+    model = HDAnet(num_classes=3).to(gpu)
     result = model(x)
     print(result.shape)
     print(model)

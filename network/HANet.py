@@ -34,6 +34,12 @@ class HANet_Conv(nn.Module):
         if self.dropout_prob > 0:
             self.dropout = nn.Dropout2d(self.dropout_prob)
 
+        # 池化层
+        if self.pooling == 'mean':
+            self.rowpool = nn.AdaptiveAvgPool2d((128 // pos_rfactor, 1))
+        else:
+            self.rowpool = nn.AdaptiveMaxPool2d((128 // pos_rfactor, 1))  # Adaptive pool方法，自适应池化
+
         # 第一个通道的注意力机制
         self.attention_first = nn.Sequential(
             nn.Conv1d(in_channels=in_channel, out_channels=mid_1_channel,
@@ -59,11 +65,7 @@ class HANet_Conv(nn.Module):
                 nn.Conv1d(in_channels=mid_2_channel, out_channels=out_channel,
                           kernel_size=kernel_size, stride=1, padding=kernel_size // 2, bias=True))    # 1D卷积操作，卷积核大小为kernel_size
 
-        # 池化层
-        if self.pooling == 'mean':
-            self.rowpool = nn.AdaptiveAvgPool2d((128 // pos_rfactor, 1))
-        else:
-            self.rowpool = nn.AdaptiveMaxPool2d((128 // pos_rfactor, 1))    # Adaptive pool方法，自适应池化
+
 
         # 位置嵌入模块
         if pos_rfactor > 0:

@@ -3,10 +3,10 @@ import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-import torch
 from torch.utils.data import Dataset, DataLoader
 import warnings
 
+import torch
 warnings.filterwarnings("ignore")
 from PIL import Image
 import numpy as np
@@ -35,7 +35,7 @@ torch.manual_seed(17)
 
 
 # 自定义数据集CamVidDataset
-class CamVidDataset(torch.utils.data.Dataset):
+class CamVidDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
 
     Args:
@@ -90,8 +90,8 @@ val_dataset = CamVidDataset(
     y_valid_dir,
 )
 
-train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=2, shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -106,10 +106,11 @@ if __name__ == "__main__":
         plt.imshow(label[0, :, :])
 
         plt.subplot(223)
-        plt.imshow((img[6, :, :, :].moveaxis(0, 2)))
+        plt.imshow((img[1, :, :, :].moveaxis(0, 2)))
         plt.subplot(224)
-        plt.imshow(label[6, :, :])
+        plt.imshow(label[1, :, :])
 
-        plt.show()
+        plt.savefig("demo.png",dpi=400)
+
         if index == 0:
             break
