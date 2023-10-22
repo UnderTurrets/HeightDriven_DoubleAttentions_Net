@@ -137,8 +137,33 @@ class HDAnet(nn.Module):
 
 
 if __name__ == "__main__":
-    x = torch.randn(3, 3, 224, 224).to(gpu)
-    model = HDAnet(num_classes=3).to(gpu)
-    result = model(x)
-    print(result.shape)
-    print(model)
+    # x = torch.randn(3, 3, 224, 224).to(gpu)
+    model = HDAnet(num_classes=3)
+    # result = model(x)
+    # print(result.shape)
+    # print(model)
+    from db.camvid import train_loader
+    import matplotlib.pyplot as plt
+
+    for index, (img, label) in enumerate(train_loader):
+        # print(img.shape)
+        # print(label.shape)
+        # img=img.to(gpu)
+        out1=model(img)[0].permute(1,2,0).detach().numpy()
+        out2 = model(img)[1].permute(1, 2, 0).detach().numpy()
+
+        plt.figure(figsize=(10, 10))
+        plt.subplot(221)
+        plt.imshow((img[0, :, :, :].moveaxis(0, 2)))
+        plt.subplot(222)
+        plt.imshow(out1/255)
+
+        plt.subplot(223)
+        plt.imshow((img[1, :, :, :].moveaxis(0, 2)))
+        plt.subplot(224)
+        plt.imshow(out2/255)
+
+        plt.savefig("demo.png", dpi=400)
+
+        if index == 0:
+            break
