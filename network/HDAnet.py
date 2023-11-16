@@ -138,7 +138,7 @@ class HDAnet(nn.Module):
 
 if __name__ == "__main__":
     # x = torch.randn(3, 3, 224, 224).to(gpu)
-    model = HDAnet(num_classes=3)
+    model = HDAnet(num_classes=33)
     # result = model(x)
     # print(result.shape)
     # print(model)
