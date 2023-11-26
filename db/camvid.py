@@ -79,7 +79,6 @@ y_train_dir = os.path.join(DATA_DIR, 'trainannot')
 x_valid_dir = os.path.join(DATA_DIR, 'val')
 y_valid_dir = os.path.join(DATA_DIR, 'valannot')
 
-gpu=torch.device("cuda")
 train_dataset = CamVidDataset(
     x_train_dir,
     y_train_dir,
@@ -88,33 +87,26 @@ val_dataset = CamVidDataset(
     x_valid_dir,
     y_valid_dir,
 )
-
-
 train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
-
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     for index, (img, label) in enumerate(train_loader):
-        print(img.shape)
-        print(label.shape)
 
-        plt.figure(figsize=(10, 10))
+        _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
 
-        # Display the first image and its label
-        plt.subplot(221)
-        plt.imshow(img[3].permute(1, 2, 0))  # permute the axes to (height, width, channels)
-        plt.subplot(222)
-        plt.imshow(label[3])
+        for i in range(img.shape[0]):
+            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
+            figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            figs[i, 1].imshow(label[i])  # 标签
+            figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        # Display the second image and its label
-        plt.subplot(223)
-        plt.imshow(img[1].permute(1, 2, 0))
-        plt.subplot(224)
-        plt.imshow(label[1])
-        plt.savefig("demo.png",dpi=400)
+        # 在最后一行图片下面添加标题
+        figs[img.shape[0] - 1, 0].set_title("Image")
+        figs[img.shape[0] - 1, 1].set_title("Label")
         plt.show()
-
         plt.cla()

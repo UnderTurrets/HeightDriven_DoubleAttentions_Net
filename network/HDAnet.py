@@ -119,11 +119,11 @@ class HDAnet(nn.Module):
     def __init__(self, num_classes):
         super(HDAnet, self).__init__()
         self.ResNet50 = IntermediateLayerGetter(
-            resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
+            resnet50(pretrained=True, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
         )
 
-        self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
+        self.DANet_Conv = DAHead(in_channels=2048, num_classes=num_classes)
 
         self.HANet_Conv = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
@@ -134,7 +134,7 @@ class HDAnet(nn.Module):
         # self.ResNet50返回的是一个字典类型的数据.
         x = feats["stage4"]
         represent = x
-        x = self.decoder(x)
+        x = self.DANet_Conv(x)
         x = self.HANet_Conv(represent, x)
 
         return x
@@ -147,10 +147,13 @@ class HDAnet(nn.Module):
 if __name__ == "__main__":
 
     model = HDAnet(num_classes=32)
+
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print(name)
+
     from db.camvid import train_loader
     import matplotlib.pyplot as plt
-
-
     for index,(img,label) in enumerate(train_loader):
 
         out = model(img).max(1)[1].permute(1, 2, 0).squeeze().cpu().data.numpy()
