@@ -1,6 +1,5 @@
 # 导入库
 import os
-
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 from torch.utils.data import Dataset, DataLoader
@@ -33,7 +32,6 @@ Cam_CLASSES = ['Animal', 'Archway', 'Bicyclist', 'Bridge', 'Building', 'Car', 'C
 
 torch.manual_seed(17)
 
-
 # 自定义数据集CamVidDataset
 class CamVidDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -49,10 +47,10 @@ class CamVidDataset(Dataset):
     """
 
     def __init__(self, images_dir, masks_dir):
+        super(CamVidDataset, self).__init__()
+
         self.transform = A.Compose([
-            A.Resize(448, 448),
-            A.HorizontalFlip(),
-            A.VerticalFlip(),
+            A.Resize(224, 224),
             A.Normalize(),
             ToTensorV2(),
         ])
@@ -81,6 +79,7 @@ y_train_dir = os.path.join(DATA_DIR, 'trainannot')
 x_valid_dir = os.path.join(DATA_DIR, 'val')
 y_valid_dir = os.path.join(DATA_DIR, 'valannot')
 
+gpu=torch.device("cuda")
 train_dataset = CamVidDataset(
     x_train_dir,
     y_train_dir,
@@ -90,8 +89,9 @@ val_dataset = CamVidDataset(
     y_valid_dir,
 )
 
-train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=2, shuffle=True)
+
+train_loader = DataLoader(train_dataset, batch_size=3, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=3, shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -100,17 +100,19 @@ if __name__ == "__main__":
         print(label.shape)
 
         plt.figure(figsize=(10, 10))
+
+        # Display the first image and its label
         plt.subplot(221)
-        plt.imshow((img[0, :, :, :].moveaxis(0, 2)))
+        plt.imshow(img[0].permute(1, 2, 0))  # permute the axes to (height, width, channels)
         plt.subplot(222)
-        plt.imshow(label[0, :, :])
+        plt.imshow(label[0])
 
+        # Display the second image and its label
         plt.subplot(223)
-        plt.imshow((img[1, :, :, :].moveaxis(0, 2)))
+        plt.imshow(img[1].permute(1, 2, 0))
         plt.subplot(224)
-        plt.imshow(label[1, :, :])
-
+        plt.imshow(label[1])
         plt.savefig("demo.png",dpi=400)
+        plt.show()
 
-        if index == 0:
-            break
+        plt.cla()

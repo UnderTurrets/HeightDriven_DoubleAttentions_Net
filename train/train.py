@@ -1,22 +1,16 @@
 import os.path
-
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
 
-import network.HDAnet as net
-model = net.HDAnet(num_classes=3).cuda()
-if(os.path.exists(r"../checkpoints/HDAnet_1.pth")):model.load_state_dict(torch.load(r"../checkpoints/HDAnet_1.pth"),strict=False)
+
 
 from d2l import torch as d2l
 
-# 损失函数选用多分类交叉熵损失函数
-lossf = nn.CrossEntropyLoss(ignore_index=255)
-# 选用adam优化器来训练
-optimizer = optim.SGD(model.parameters(), lr=0.1)
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
+
 
 # 训练50轮
 epochs_num = 50
@@ -79,5 +73,18 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
 
 
 if __name__ == "__main__":
-    from db.camvid import train_loader,val_loader
+    from db.camvid import train_loader, val_loader
+
+    import network.HDAnet as net
+    model = net.HDAnet(num_classes=32).cuda()
+    if (os.path.exists(r"../checkpoints/HDAnet_1.pth")): model.load_state_dict(
+        torch.load(r"../checkpoints/HDAnet_1.pth"), strict=False)
+
+    # 损失函数选用多分类交叉熵损失函数
+    lossf = nn.CrossEntropyLoss(ignore_index=255)
+    # 选用adam优化器来训练
+    optimizer = optim.SGD(model.parameters(), lr=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
+
     train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num,scheduler)
+

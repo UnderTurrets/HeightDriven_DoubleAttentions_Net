@@ -1,6 +1,8 @@
 from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
 from network.HANet import HANet_Conv
+
+
 def initialize_weights(*models):
     """
     Initialize Model Weights
@@ -16,14 +18,16 @@ def initialize_weights(*models):
                 if module.bias is not None:
                     module.bias.data.zero_()
             elif isinstance(module, nn.BatchNorm2d) or isinstance(module, nn.BatchNorm1d) or \
-                isinstance(module, nn.GroupNorm) or isinstance(module, nn.SyncBatchNorm):
+                    isinstance(module, nn.GroupNorm) or isinstance(module, nn.SyncBatchNorm):
                 module.weight.data.fill_(1)
                 module.bias.data.zero_()
+
 
 import torch
 import torch.nn as nn
 
 gpu = torch.device("cuda")
+
 
 class PositionAttention(nn.Module):
     def __init__(self, in_channels):
@@ -49,7 +53,6 @@ class PositionAttention(nn.Module):
         return E
 
 
-
 class ChannelAttention(nn.Module):
     def __init__(self):
         super(ChannelAttention, self).__init__()
@@ -63,7 +66,6 @@ class ChannelAttention(nn.Module):
         X = torch.matmul(X.transpose(1, 2), x.view(b, c, h * w)).view(b, c, h, w)
         X = self.beta * X + x
         return X
-
 
 
 class DAHead(nn.Module):
@@ -110,6 +112,7 @@ class DAHead(nn.Module):
 
         return output
 
+
 class HDAnet(nn.Module):
     def __init__(self, num_classes):
         super(HDAnet, self).__init__()
@@ -117,7 +120,6 @@ class HDAnet(nn.Module):
             resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
         )
-
 
         self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
 
@@ -129,7 +131,7 @@ class HDAnet(nn.Module):
         feats = self.ResNet50(x)
         # self.ResNet50返回的是一个字典类型的数据.
         x = feats["stage4"]
-        represent=x
+        represent = x
         x = self.decoder(x)
         x = self.HANet_Conv(represent, x)
 
@@ -138,7 +140,7 @@ class HDAnet(nn.Module):
 
 if __name__ == "__main__":
     # x = torch.randn(3, 3, 224, 224).to(gpu)
-    model = HDAnet(num_classes=33)
+    model = HDAnet(num_classes=32)
     # result = model(x)
     # print(result.shape)
     # print(model)
@@ -149,19 +151,19 @@ if __name__ == "__main__":
         # print(img.shape)
         # print(label.shape)
         # img=img.to(gpu)
-        out1=model(img)[0].permute(1,2,0).detach().numpy()
+        out1 = model(img)[0].permute(1, 2, 0).detach().numpy()
         out2 = model(img)[1].permute(1, 2, 0).detach().numpy()
 
         plt.figure(figsize=(10, 10))
         plt.subplot(221)
-        plt.imshow((img[0, :, :, :].moveaxis(0, 2)))
+        plt.imshow((img[0, :, :, :].permute(1, 2, 0)))
         plt.subplot(222)
-        plt.imshow(out1/255)
+        plt.imshow(out1)
 
         plt.subplot(223)
-        plt.imshow((img[1, :, :, :].moveaxis(0, 2)))
+        plt.imshow((img[1, :, :, :].permute(1, 2, 0)))
         plt.subplot(224)
-        plt.imshow(out2/255)
+        plt.imshow(out2)
 
         plt.savefig("demo.png", dpi=400)
 
