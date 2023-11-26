@@ -1,3 +1,5 @@
+import random
+
 from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
 from network.HANet import HANet_Conv
@@ -138,34 +140,38 @@ class HDAnet(nn.Module):
         return x
 
 
+
+
+
+
 if __name__ == "__main__":
-    # x = torch.randn(3, 3, 224, 224).to(gpu)
+
     model = HDAnet(num_classes=32)
-    # result = model(x)
-    # print(result.shape)
-    # print(model)
     from db.camvid import train_loader
     import matplotlib.pyplot as plt
 
-    for index, (img, label) in enumerate(train_loader):
-        # print(img.shape)
-        # print(label.shape)
-        # img=img.to(gpu)
-        out1 = model(img)[0].permute(1, 2, 0).detach().numpy()
-        out2 = model(img)[1].permute(1, 2, 0).detach().numpy()
 
-        plt.figure(figsize=(10, 10))
-        plt.subplot(221)
-        plt.imshow((img[0, :, :, :].permute(1, 2, 0)))
-        plt.subplot(222)
-        plt.imshow(out1)
+    for index,(img,label) in enumerate(train_loader):
 
-        plt.subplot(223)
-        plt.imshow((img[1, :, :, :].permute(1, 2, 0)))
-        plt.subplot(224)
-        plt.imshow(out2)
+        out = model(img).max(1)[1].permute(1, 2, 0).squeeze().cpu().data.numpy()
 
-        plt.savefig("demo.png", dpi=400)
+        _, figs = plt.subplots(img.shape[0], 3, figsize=(10, 10))
 
-        if index == 0:
-            break
+        for i in range(img.shape[0]):
+            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
+            figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            figs[i, 1].imshow(label[i])  # 标签
+            figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            figs[i, 2].imshow(out)  # 模型输出结果
+            figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
+
+        # 在最后一行图片下面添加标题
+        figs[img.shape[0] - 1, 0].set_title("Image")
+        figs[img.shape[0] - 1, 1].set_title("Label")
+        figs[img.shape[0] - 1, 2].set_title("segnet")
+        plt.show()
+        plt.cla()
+

@@ -90,8 +90,10 @@ val_dataset = CamVidDataset(
 )
 
 
-train_loader = DataLoader(train_dataset, batch_size=3, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=3, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
+
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -103,9 +105,9 @@ if __name__ == "__main__":
 
         # Display the first image and its label
         plt.subplot(221)
-        plt.imshow(img[0].permute(1, 2, 0))  # permute the axes to (height, width, channels)
+        plt.imshow(img[3].permute(1, 2, 0))  # permute the axes to (height, width, channels)
         plt.subplot(222)
-        plt.imshow(label[0])
+        plt.imshow(label[3])
 
         # Display the second image and its label
         plt.subplot(223)
