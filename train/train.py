@@ -69,7 +69,7 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df.to_excel("../res/DAnet_camvid.xlsx")
         # ----------------保存模型-------------------
         if np.mod(epoch + 1, 5) == 0:
-            torch.save(model.state_dict(), f'checkpoints/HDAnet_{epoch + 1}.pth')
+            torch.save(model.state_dict(), f'../checkpoints/model_oneHANet/HDAnet_{epoch + 1}.pth')
 
 
 if __name__ == "__main__":
@@ -77,8 +77,8 @@ if __name__ == "__main__":
 
     import network.HDAnet as net
     model = net.HDAnet(num_classes=32).cuda()
-    if (os.path.exists(r"../checkpoints/HDAnet_1.pth")): model.load_state_dict(
-        torch.load(r"../checkpoints/HDAnet_1.pth"), strict=False)
+    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
+        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
 
     # 损失函数选用多分类交叉熵损失函数
     lossf = nn.CrossEntropyLoss(ignore_index=255)

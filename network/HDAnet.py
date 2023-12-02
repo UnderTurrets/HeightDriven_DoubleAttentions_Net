@@ -146,7 +146,10 @@ class HDAnet(nn.Module):
 
 if __name__ == "__main__":
 
+    import os
     model = HDAnet(num_classes=32)
+    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
+        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
 
     for name, param in model.named_parameters():
         if param.requires_grad:
