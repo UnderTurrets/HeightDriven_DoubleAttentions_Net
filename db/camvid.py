@@ -78,6 +78,8 @@ x_train_dir = os.path.join(DATA_DIR, 'train')
 y_train_dir = os.path.join(DATA_DIR, 'trainannot')
 x_valid_dir = os.path.join(DATA_DIR, 'val')
 y_valid_dir = os.path.join(DATA_DIR, 'valannot')
+x_test_dir = os.path.join(DATA_DIR, 'test')
+y_test_dir = os.path.join(DATA_DIR, 'testannot')
 
 train_dataset = CamVidDataset(
     x_train_dir,
@@ -87,9 +89,13 @@ val_dataset = CamVidDataset(
     x_valid_dir,
     y_valid_dir,
 )
+test_dataset = CamVidDataset(
+    x_test_dir,
+    y_test_dir,
+)
 train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
-
+test_loader = DataLoader(test_dataset,batch_size=4,shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt

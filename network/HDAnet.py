@@ -153,16 +153,16 @@ if __name__ == "__main__":
         if param.requires_grad:
             print(name)
 
-    from db.camvid import train_loader
+    from db.camvid import test_loader
     from db.camvid import Cam_COLORMAP,Cam_CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
     # 使用Cam_COLORMAP创建颜色映射
     seg_cmap = ListedColormap(Cam_COLORMAP)
 
-    for index,(img,label) in enumerate(train_loader):
+    for index,(img,label) in enumerate(test_loader):
 
-        out= model(img).max(dim=1)[1].squeeze().cpu().data.numpy()
+        out= model(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
         _, figs = plt.subplots(img.shape[0], 3, figsize=(10, 10))
 
