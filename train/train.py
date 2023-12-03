@@ -77,8 +77,7 @@ if __name__ == "__main__":
 
     import network.HDAnet as net
     model = net.HDAnet(num_classes=32).cuda()
-    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
-        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
+    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
 
     # 损失函数选用多分类交叉熵损失函数
     lossf = nn.CrossEntropyLoss(ignore_index=255)

@@ -1,5 +1,3 @@
-import random
-
 from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
 from network.HANet import HANet_Conv
@@ -148,18 +146,23 @@ if __name__ == "__main__":
 
     import os
     model = HDAnet(num_classes=32)
-    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
-        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
+    if (os.path.exists(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth")):
+        model.load_state_dict(torch.load(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth"), strict=False)
 
     for name, param in model.named_parameters():
         if param.requires_grad:
             print(name)
 
     from db.camvid import train_loader
+    from db.camvid import Cam_COLORMAP,Cam_CLASSES
     import matplotlib.pyplot as plt
+    from matplotlib.colors import ListedColormap
+    # 使用Cam_COLORMAP创建颜色映射
+    seg_cmap = ListedColormap(Cam_COLORMAP)
+
     for index,(img,label) in enumerate(train_loader):
 
-        out = model(img).max(1)[1].permute(1, 2, 0).squeeze().cpu().data.numpy()
+        out= model(img).max(dim=1)[1].squeeze().cpu().data.numpy()
 
         _, figs = plt.subplots(img.shape[0], 3, figsize=(10, 10))
 
@@ -167,10 +170,14 @@ if __name__ == "__main__":
             figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
             figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
-            figs[i, 1].imshow(label[i])  # 标签
+
+            figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
-            figs[i, 2].imshow(out)  # 模型输出结果
+
+            figs[i, 2].imshow(out[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 

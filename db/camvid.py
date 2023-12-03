@@ -93,17 +93,21 @@ val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
+    # Add this import for color mapping
+    from matplotlib.colors import ListedColormap
+
     for index, (img, label) in enumerate(train_loader):
+        # print(label.shape)
 
         _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
 
         for i in range(img.shape[0]):
-            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
-            figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
-            figs[i, 1].imshow(label[i])  # 标签
-            figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # Original image
+            figs[i, 0].axes.get_xaxis().set_visible(False)
+            figs[i, 0].axes.get_yaxis().set_visible(False)
+            figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0, vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+            figs[i, 1].axes.get_xaxis().set_visible(False)
+            figs[i, 1].axes.get_yaxis().set_visible(False)
 
         # 在最后一行图片下面添加标题
         figs[img.shape[0] - 1, 0].set_title("Image")
