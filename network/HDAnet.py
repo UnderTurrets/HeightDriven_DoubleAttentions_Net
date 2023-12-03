@@ -138,10 +138,6 @@ class HDAnet(nn.Module):
         return x
 
 
-
-
-
-
 if __name__ == "__main__":
 
     import os
@@ -181,10 +177,10 @@ if __name__ == "__main__":
             figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        # 在最后一行图片下面添加标题
-        figs[img.shape[0] - 1, 0].set_title("Image")
-        figs[img.shape[0] - 1, 1].set_title("Label")
-        figs[img.shape[0] - 1, 2].set_title("segnet")
+        # 在第一行图片下面添加标题
+        figs[0, 0].set_title("Image")
+        figs[0, 1].set_title("Label")
+        figs[0, 2].set_title("segnet")
         plt.show()
         plt.cla()
 

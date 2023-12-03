@@ -44,7 +44,7 @@ if __name__ == "__main__":
     figs[1].axes.get_xaxis().set_visible(False)  # 去掉x轴
     figs[1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-    # 在最后一行图片下面添加标题
+    # 在第一行图片下面添加标题
     figs[0].set_title("Image")
     figs[1].set_title("segnet")
     plt.show()
