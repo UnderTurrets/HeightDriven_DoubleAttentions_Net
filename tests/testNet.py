@@ -1,13 +1,15 @@
 if __name__ == "__main__":
 
-    from network.HDAnet import HDAnet
+    from network.HDAnet import HDAnet_oneHAM,HDAnet_twoHAM
     import torch
     import os
-    model = HDAnet(num_classes=32)
-    if (os.path.exists(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth")):
-        model.load_state_dict(
-            torch.load(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth"),
-            strict=False)
+    model = HDAnet_twoHAM(num_classes=32)
+
+    # 根据路径自己修改
+    model_path=r"D:\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth"
+
+    if (os.path.exists(model_path)):
+        model.load_state_dict(torch.load(model_path),strict=True)
 
 
     from db.camvid import Cam_COLORMAP, Cam_CLASSES

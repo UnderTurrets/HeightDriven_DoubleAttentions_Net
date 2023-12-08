@@ -113,9 +113,9 @@ class DAHead(nn.Module):
         return output
 
 
-class HDAnet(nn.Module):
+class HDAnet_oneHAM(nn.Module):
     def __init__(self, num_classes):
-        super(HDAnet, self).__init__()
+        super(HDAnet_oneHAM, self).__init__()
         self.ResNet50 = IntermediateLayerGetter(
             resnet50(pretrained=True, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer4': 'stage4'}
@@ -138,27 +138,62 @@ class HDAnet(nn.Module):
         return x
 
 
+class HDAnet_twoHAM(nn.Module):
+    def __init__(self, num_classes):
+        super(HDAnet_twoHAM, self).__init__()
+        # 将resnet50分为4个stage，其中stage4是最后一个stage
+        self.ResNet50 = IntermediateLayerGetter(
+            resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
+            return_layers={'layer1': 'stage1', 'layer2': 'stage2', 'layer3': 'stage3', 'layer4': 'stage4'}
+        )
+
+        self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
+
+        self.HANet_Conv1 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        self.HANet_Conv2 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
+                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+
+    def forward(self, x):
+        feats = self.ResNet50(x)
+        x = feats["stage3"]
+        represent = x
+        x = feats["stage4"]
+        x = self.HANet_Conv1(represent, x)
+        represent = x
+        x = self.decoder(x)
+        x = self.HANet_Conv2(represent, x)
+        return x
+
+
 if __name__ == "__main__":
-
     import os
-    model = HDAnet(num_classes=32)
-    if (os.path.exists(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth")):
-        model.load_state_dict(torch.load(r"D:\Desktop\scholarly achievements\2023大创\checkpoints\model_oneHANet\HDAnet_50.pth"), strict=False)
+    #根据路径自己修改
+    model_path = r"D:\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth"
 
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            print(name)
+    model = HDAnet_oneHAM(num_classes=32)
+    if (os.path.exists(model_path)):
+        model.load_state_dict(torch.load(model_path), strict=True)
+        print("success to load")
+    else:print("fail to load")
+
+    # for name, param in model.named_parameters():
+    #     if param.requires_grad:
+    #         print(name)
 
     from db.camvid import test_loader
-    from db.camvid import Cam_COLORMAP,Cam_CLASSES
+    from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
+
     # 使用Cam_COLORMAP创建颜色映射
     seg_cmap = ListedColormap(Cam_COLORMAP)
 
-    for index,(img,label) in enumerate(test_loader):
+    for index, (img, label) in enumerate(test_loader):
 
-        out= model(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out = model(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
         _, figs = plt.subplots(img.shape[0], 3, figsize=(10, 10))
 
@@ -183,4 +218,3 @@ if __name__ == "__main__":
         figs[0, 2].set_title("segnet")
         plt.show()
         plt.cla()
-

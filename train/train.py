@@ -76,7 +76,7 @@ if __name__ == "__main__":
     from db.camvid import train_loader, val_loader
 
     import network.HDAnet as net
-    model = net.HDAnet(num_classes=32).cuda()
+    model = net.HDAnet_oneHAM(num_classes=32).cuda()
     if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
 
     # 损失函数选用多分类交叉熵损失函数
