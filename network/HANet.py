@@ -16,7 +16,6 @@ class HANet_Conv(nn.Module):
         super(HANet_Conv, self).__init__()
 
         # 参数初始化
-
         self.pooling = pooling    # 池化方式，可选mean或max
         self.pos_injection = pos_injection  # 位置注入方式，1表示注入在输入特征层，2表示注入在第一次卷积后的输出
         self.layer = layer    # 卷积层数，可选2或3

@@ -73,13 +73,13 @@ class CamVidDataset(Dataset):
 
 
 # 设置数据集路径
-DATA_DIR = r"D:\Desktop\Datasets\camvid"  # 根据自己的路径来设置
-x_train_dir = os.path.join(DATA_DIR, 'train')
-y_train_dir = os.path.join(DATA_DIR, 'trainannot')
-x_valid_dir = os.path.join(DATA_DIR, 'val')
-y_valid_dir = os.path.join(DATA_DIR, 'valannot')
-x_test_dir = os.path.join(DATA_DIR, 'test')
-y_test_dir = os.path.join(DATA_DIR, 'testannot')
+from conf.conf import camvid_path
+x_train_dir = os.path.join(camvid_path, 'train')
+y_train_dir = os.path.join(camvid_path, 'trainannot')
+x_valid_dir = os.path.join(camvid_path, 'val')
+y_valid_dir = os.path.join(camvid_path, 'valannot')
+x_test_dir = os.path.join(camvid_path, 'test')
+y_test_dir = os.path.join(camvid_path, 'testannot')
 
 train_dataset = CamVidDataset(
     x_train_dir,

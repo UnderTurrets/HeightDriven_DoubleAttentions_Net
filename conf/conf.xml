@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- camvid数据集路径 -->
+    <camvid_path>D:\Datasets\camvid</camvid_path>
+    <!-- cityscapes数据集路径 -->
+    <cityscapes_path>D:\Datasets\cityscapes</cityscapes_path>
+    <!-- 其他数据集路径 -->
+    <!-- ... -->
+
+    <!-- 训练好的模型路径 -->
+    <HANet_oneHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\oneHANet\HDAnet_50.pth</HANet_oneHAM_path>
+    <HANet_twoHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth</HANet_twoHAM_path>
+
+</configuration>

@@ -3,14 +3,17 @@ if __name__ == "__main__":
     from network.HDAnet import HDAnet_oneHAM,HDAnet_twoHAM
     import torch
     import os
-    model = HDAnet_twoHAM(num_classes=32)
+    from conf.conf import HANet_oneHAM_path, HANet_twoHAM_path
 
-    # 根据路径自己修改
-    model_path=r"D:\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth"
+    model_oneHAM = HDAnet_oneHAM(num_classes=32)
+    model_twoHAM = HDAnet_twoHAM(num_classes=32)
 
-    if (os.path.exists(model_path)):
-        model.load_state_dict(torch.load(model_path),strict=True)
 
+    if (os.path.exists(HANet_oneHAM_path) and os.path.exists(HANet_twoHAM_path)):
+        model_oneHAM.load_state_dict(torch.load(HANet_oneHAM_path), strict=True)
+        model_twoHAM.load_state_dict(torch.load(HANet_twoHAM_path), strict=True)
+        print("success to load")
+    else:print("fail to load")
 
     from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt
@@ -33,7 +36,7 @@ if __name__ == "__main__":
         transforms.ToTensor(),  # 转换成张量
     ])
     img = transform(img).unsqueeze(0)  # 增加一个批次维度
-    out = model(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    out = model_oneHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
     _, figs = plt.subplots(1, 2, figsize=(10, 10))
 

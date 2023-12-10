@@ -171,11 +171,13 @@ class HDAnet_twoHAM(nn.Module):
 if __name__ == "__main__":
     import os
     #根据路径自己修改
-    model_path = r"D:\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth"
+    from conf.conf import HANet_oneHAM_path,HANet_twoHAM_path
 
-    model = HDAnet_oneHAM(num_classes=32)
-    if (os.path.exists(model_path)):
-        model.load_state_dict(torch.load(model_path), strict=True)
+    model_oneHAM = HDAnet_oneHAM(num_classes=32)
+    model_twoHAM = HDAnet_twoHAM(num_classes=32)
+    if (os.path.exists(HANet_oneHAM_path) and os.path.exists(HANet_twoHAM_path)):
+        model_oneHAM.load_state_dict(torch.load(HANet_oneHAM_path), strict=True)
+        model_twoHAM.load_state_dict(torch.load(HANet_twoHAM_path), strict=True)
         print("success to load")
     else:print("fail to load")
 
@@ -193,9 +195,10 @@ if __name__ == "__main__":
 
     for index, (img, label) in enumerate(test_loader):
 
-        out = model(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_oneHAM = model_oneHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_twoHAM = model_twoHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
-        _, figs = plt.subplots(img.shape[0], 3, figsize=(10, 10))
+        _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
 
         for i in range(img.shape[0]):
             figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
@@ -207,14 +210,20 @@ if __name__ == "__main__":
             figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 2].imshow(out[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+            figs[i, 2].imshow(out_oneHAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
                               vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
+            figs[i, 3].imshow(out_twoHAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+            figs[i, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
+            figs[i, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
+
         # 在第一行图片下面添加标题
         figs[0, 0].set_title("Image")
         figs[0, 1].set_title("Label")
-        figs[0, 2].set_title("segnet")
+        figs[0, 2].set_title("oneHAM")
+        figs[0, 3].set_title("twoHAM")
         plt.show()
         plt.cla()

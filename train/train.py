@@ -18,6 +18,7 @@ epochs_num = 50
 
 def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
                devices=d2l.try_all_gpus()):
+
     timer, num_batches = d2l.Timer(), len(train_iter)
     animator = d2l.Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=[0, 1],
                             legend=['train loss', 'train acc', 'test acc'])
