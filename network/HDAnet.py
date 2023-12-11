@@ -171,7 +171,7 @@ class HDAnet_twoHAM(nn.Module):
 if __name__ == "__main__":
     import os
     #根据路径自己修改
-    from conf.conf import HANet_oneHAM_path,HANet_twoHAM_path
+    from conf.__init__ import HANet_oneHAM_path,HANet_twoHAM_path
 
     model_oneHAM = HDAnet_oneHAM(num_classes=32)
     model_twoHAM = HDAnet_twoHAM(num_classes=32)

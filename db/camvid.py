@@ -73,7 +73,7 @@ class CamVidDataset(Dataset):
 
 
 # 设置数据集路径
-from conf.conf import camvid_path
+from conf.__init__ import camvid_path
 x_train_dir = os.path.join(camvid_path, 'train')
 y_train_dir = os.path.join(camvid_path, 'trainannot')
 x_valid_dir = os.path.join(camvid_path, 'val')

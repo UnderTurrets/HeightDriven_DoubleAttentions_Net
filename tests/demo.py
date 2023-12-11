@@ -3,7 +3,7 @@ if __name__ == "__main__":
     from network.HDAnet import HDAnet_oneHAM,HDAnet_twoHAM
     import torch
     import os
-    from conf.conf import HANet_oneHAM_path, HANet_twoHAM_path
+    from conf.__init__ import HANet_oneHAM_path, HANet_twoHAM_path
 
     model_oneHAM = HDAnet_oneHAM(num_classes=32)
     model_twoHAM = HDAnet_twoHAM(num_classes=32)
