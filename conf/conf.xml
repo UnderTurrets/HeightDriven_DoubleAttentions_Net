@@ -12,4 +12,7 @@
     <HANet_oneHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\oneHANet\HDAnet_50.pth</HANet_oneHAM_path>
     <HANet_twoHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth</HANet_twoHAM_path>
 
+    <!-- 保存模型的路径 -->
+    <save_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\threeHANet\</save_path>
+
 </configuration>

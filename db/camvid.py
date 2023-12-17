@@ -93,6 +93,7 @@ test_dataset = CamVidDataset(
     x_test_dir,
     y_test_dir,
 )
+
 train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
 test_loader = DataLoader(test_dataset,batch_size=4,shuffle=True)

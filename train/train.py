@@ -1,4 +1,5 @@
 import os.path
+
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import torch
 import torch.nn as nn
@@ -6,18 +7,17 @@ import torch.optim as optim
 import numpy as np
 import pandas as pd
 
-
-
 from d2l import torch as d2l
-
-
 
 # 训练50轮
 epochs_num = 50
 
 
-def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
-               devices=d2l.try_all_gpus()):
+def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler, save_path, devices=d2l.try_all_gpus()):
+    if os.path.exists(save_path) == True:
+        pass
+    else:
+        os.makedirs(name=save_path)
 
     timer, num_batches = d2l.Timer(), len(train_iter)
     animator = d2l.Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=[0, 1],
@@ -46,7 +46,7 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
 
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\t'.format(
                     epoch, i * len(features), len(train_iter.dataset),
-                               100. * i / len(train_iter)))
+                           100. * i / len(train_iter)))
 
         test_acc = d2l.evaluate_accuracy_gpu(net, test_iter)
         animator.add(epoch + 1, (None, None, test_acc))
@@ -70,15 +70,17 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df.to_excel("../res/DAnet_camvid.xlsx")
         # ----------------保存模型-------------------
         if np.mod(epoch + 1, 5) == 0:
-            torch.save(model.state_dict(), f'../checkpoints/model_oneHANet/HDAnet_{epoch + 1}.pth')
+            torch.save(model.state_dict(), save_path + f'HDAnet_{epoch + 1}.pth')
 
 
 if __name__ == "__main__":
     from db.camvid import train_loader, val_loader
 
     import network.HDAnet as net
+
     model = net.HDAnet_oneHAM(num_classes=32).cuda()
-    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
+    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
+        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
 
     # 损失函数选用多分类交叉熵损失函数
     lossf = nn.CrossEntropyLoss(ignore_index=255)
@@ -86,5 +88,6 @@ if __name__ == "__main__":
     optimizer = optim.SGD(model.parameters(), lr=0.1)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
 
-    train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num,scheduler)
+    from conf import save_path
 
+    train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num, save_path, scheduler)
