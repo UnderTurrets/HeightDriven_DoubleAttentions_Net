@@ -90,4 +90,5 @@ if __name__ == "__main__":
 
     from conf import save_path
 
-    train_ch13(model, train_loader, val_loader, lossf, optimizer, epochs_num, save_path, scheduler)
+    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader,loss= lossf, trainer=optimizer,
+               num_epochs=epochs_num,scheduler= scheduler, save_path=save_path)
