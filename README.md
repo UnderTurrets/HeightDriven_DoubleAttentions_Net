@@ -11,4 +11,4 @@
 3. Mean Intersection over Union（平均交并比，MIoU）
 4. Weighted IoU（加权交并比，WIoU）
 
-# 3.网络结构是否可以多加几层HAM
+# 3.网络结构是否可以多加几层HAM easy

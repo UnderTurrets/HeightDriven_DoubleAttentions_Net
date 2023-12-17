@@ -9,11 +9,9 @@ import pandas as pd
 
 from d2l import torch as d2l
 
-# 训练50轮
-epochs_num = 50
-
 
 def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler, save_path, devices=d2l.try_all_gpus()):
+
     if os.path.exists(save_path) == True:
         pass
     else:
@@ -90,5 +88,5 @@ if __name__ == "__main__":
 
     from conf import save_path
 
-    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader,loss= lossf, trainer=optimizer,
-               num_epochs=epochs_num,scheduler= scheduler, save_path=save_path)
+    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer,
+               num_epochs=50, scheduler=scheduler, save_path=save_path)
