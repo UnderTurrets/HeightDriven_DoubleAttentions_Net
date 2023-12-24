@@ -1,4 +1,4 @@
-import os.path
+import os
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import torch
@@ -67,19 +67,20 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df['time'] = time_list
         df.to_excel(data_path)
         # ----------------保存模型-------------------
-        if np.mod(epoch + 1, 10) == 0:
-            torch.save(model.state_dict(), save_path + f'HDAnet_{epoch + 1}.pth')
+        if np.mod(epoch + 1, 2) == 0:
+            os.chdir(save_path)
+            torch.save(model.state_dict(), f'HDAnet_{epoch + 1}.pth')
 
 
 if __name__ == "__main__":
     from db.camvid import train_loader, val_loader
-
     import network.HDAnet as net
+    from conf import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
 
-    model = net.HDAnet(num_classes=32, HAM_num=3).cuda()
-    excel_path = "../res/HDAnet_3HDAM.xlsx"
-    from conf import HANet_1HAM_path,HANet_2HAM_path,HANet_3HAM_path,HANet_4HAM_path
-    if (os.path.exists(HANet_2HAM_path)): model.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
+    model = net.HDAnet(num_classes=32, HAM_num=1).cuda()
+    excel_path = "../res/HDAnet_1HAM.xlsx"
+    model_path = HDANet_1HAM["path"]
+    if (os.path.exists(model_path)): model.load_state_dict(torch.load(model_path), strict=True)
 
     # 损失函数选用多分类交叉熵损失函数
     lossf = nn.CrossEntropyLoss(ignore_index=255)

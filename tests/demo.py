@@ -1,24 +1,38 @@
 if __name__ == "__main__":
 
-    from network.HDAnet import HDAnet_oneHAM,HDAnet_twoHAM
+    from network.HDAnet import HDAnet
     import torch
     import os
-    from conf.__init__ import HANet_1HAM_path, HANet_2HAM_path
+    from conf.__init__ import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
 
-    model_oneHAM = HDAnet_oneHAM(num_classes=32)
-    model_twoHAM = HDAnet_twoHAM(num_classes=32)
-
-
-    if (os.path.exists(HANet_1HAM_path) and os.path.exists(HANet_2HAM_path)):
-        model_oneHAM.load_state_dict(torch.load(HANet_1HAM_path), strict=True)
-        model_twoHAM.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
-        print("success to load")
-    else:print("fail to load")
+    model_1HAM = HDAnet(num_classes=32, HAM_num=1)
+    model_2HAM = HDAnet(num_classes=32, HAM_num=2)
+    model_3HAM = HDAnet(num_classes=32, HAM_num=3)
+    model_4HAM = HDAnet(num_classes=32, HAM_num=4)
+    if os.path.exists(HDANet_1HAM["path"]):
+        model_1HAM.load_state_dict(torch.load(HDANet_1HAM["path"]), strict=True)
+        print("success to load HDANet_1HAM")
+    else:
+        print("fail to load HDANet_1HAM")
+    if os.path.exists(HDANet_2HAM["path"]):
+        model_2HAM.load_state_dict(torch.load(HDANet_2HAM["path"]), strict=True)
+        print("success to load HDANet_2HAM")
+    else:
+        print("fail to load HDANet_2HAM")
+    if os.path.exists(HDANet_3HAM["path"]):
+        model_3HAM.load_state_dict(torch.load(HDANet_3HAM["path"]), strict=True)
+        print("success to load HDANet_3HAM")
+    else:
+        print("fail to load HDANet_3HAM")
+    if os.path.exists(HDANet_4HAM["path"]):
+        model_4HAM.load_state_dict(torch.load(HDANet_4HAM["path"]), strict=True)
+        print("success to load HDANet_4HAM")
+    else:
+        print("fail to load HDANet_4HAM")
 
     from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
-
 
     # 使用Cam_COLORMAP创建颜色映射
     seg_cmap = ListedColormap(Cam_COLORMAP)
@@ -36,7 +50,7 @@ if __name__ == "__main__":
         transforms.ToTensor(),  # 转换成张量
     ])
     img = transform(img).unsqueeze(0)  # 增加一个批次维度
-    out = model_oneHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    out = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
     _, figs = plt.subplots(1, 2, figsize=(10, 10))
 

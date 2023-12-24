@@ -2,7 +2,6 @@ from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
 from network.HANet import HANet_Conv
 
-
 def initialize_weights(*models):
     """
     Initialize Model Weights
@@ -22,10 +21,8 @@ def initialize_weights(*models):
                 module.weight.data.fill_(1)
                 module.bias.data.zero_()
 
-
 import torch
 import torch.nn as nn
-
 gpu = torch.device("cuda")
 
 
@@ -53,6 +50,7 @@ class PositionAttention(nn.Module):
         return E
 
 
+
 class ChannelAttention(nn.Module):
     def __init__(self):
         super(ChannelAttention, self).__init__()
@@ -66,6 +64,7 @@ class ChannelAttention(nn.Module):
         X = torch.matmul(X.transpose(1, 2), x.view(b, c, h * w)).view(b, c, h, w)
         X = self.beta * X + x
         return X
+
 
 
 class DAHead(nn.Module):
@@ -111,6 +110,8 @@ class DAHead(nn.Module):
         output = self.conv4(output)
 
         return output
+
+
 
 class HDAnet(nn.Module):
     def __init__(self, num_classes, HAM_num):
@@ -190,34 +191,36 @@ class HDAnet(nn.Module):
             x = self.HANet_Conv4(represent, x)
             return x
 
+
+
 if __name__ == "__main__":
     import os
-    from conf.__init__ import HANet_1HAM_path, HANet_2HAM_path, HANet_3HAM_path, HANet_4HAM_path
+    from conf.__init__ import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
+
     model_1HAM = HDAnet(num_classes=32, HAM_num=1)
     model_2HAM = HDAnet(num_classes=32, HAM_num=2)
     model_3HAM = HDAnet(num_classes=32, HAM_num=3)
     model_4HAM = HDAnet(num_classes=32, HAM_num=4)
-    # if os.path.exists(HANet_1HAM_path):
-    #     model_1HAM.load_state_dict(torch.load(HANet_1HAM_path), strict=True)
-    #     print("success to load HANet_1HAM")
-    # else:
-    #     print("fail to load HANet_1HAM")
-    if os.path.exists(HANet_2HAM_path):
-        model_2HAM.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
-        print("success to load HANet_2HAM")
+    if os.path.exists(HDANet_1HAM["path"]):
+        model_1HAM.load_state_dict(torch.load(HDANet_1HAM["path"]), strict=True)
+        print("success to load HDANet_1HAM")
     else:
-        print("fail to load HANet_2HAM")
-    if os.path.exists(HANet_3HAM_path):
-        model_3HAM.load_state_dict(torch.load(HANet_3HAM_path), strict=True)
-        print("success to load HANet_3HAM")
+        print("fail to load HDANet_1HAM")
+    if os.path.exists(HDANet_2HAM["path"]):
+        model_2HAM.load_state_dict(torch.load(HDANet_2HAM["path"]), strict=True)
+        print("success to load HDANet_2HAM")
     else:
-        print("fail to load HANet_3HAM")
-    if os.path.exists(HANet_4HAM_path):
-        model_4HAM.load_state_dict(torch.load(HANet_4HAM_path), strict=True)
-        print("success to load HANet_4HAM")
+        print("fail to load HDANet_2HAM")
+    if os.path.exists(HDANet_3HAM["path"]):
+        model_3HAM.load_state_dict(torch.load(HDANet_3HAM["path"]), strict=True)
+        print("success to load HDANet_3HAM")
     else:
-        print("fail to load HANet_4HAM")
-
+        print("fail to load HDANet_3HAM")
+    if os.path.exists(HDANet_4HAM["path"]):
+        model_4HAM.load_state_dict(torch.load(HDANet_4HAM["path"]), strict=True)
+        print("success to load HDANet_4HAM")
+    else:
+        print("fail to load HDANet_4HAM")
 
     # for name, param in model.named_parameters():
     #     if param.requires_grad:
