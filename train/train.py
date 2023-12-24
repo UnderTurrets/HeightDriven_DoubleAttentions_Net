@@ -10,8 +10,8 @@ import pandas as pd
 from d2l import torch as d2l
 
 
-def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler, save_path, devices=d2l.try_all_gpus()):
-
+def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler, save_path, data_path,
+               devices=d2l.try_all_gpus()):
     if os.path.exists(save_path) == True:
         pass
     else:
@@ -65,9 +65,9 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df['train_acc'] = train_acc_list
         df['test_acc'] = test_acc_list
         df['time'] = time_list
-        df.to_excel("../res/DAnet_camvid.xlsx")
+        df.to_excel(data_path)
         # ----------------保存模型-------------------
-        if np.mod(epoch + 1, 5) == 0:
+        if np.mod(epoch + 1, 10) == 0:
             torch.save(model.state_dict(), save_path + f'HDAnet_{epoch + 1}.pth')
 
 
@@ -76,9 +76,10 @@ if __name__ == "__main__":
 
     import network.HDAnet as net
 
-    model = net.HDAnet_oneHAM(num_classes=32).cuda()
-    if (os.path.exists(r"../checkpoints/HDAnet_50.pth")): model.load_state_dict(
-        torch.load(r"../checkpoints/HDAnet_50.pth"), strict=False)
+    model = net.HDAnet(num_classes=32, HAM_num=3).cuda()
+    excel_path = "../res/HDAnet_3HDAM.xlsx"
+    from conf import HANet_1HAM_path,HANet_2HAM_path,HANet_3HAM_path,HANet_4HAM_path
+    if (os.path.exists(HANet_2HAM_path)): model.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
 
     # 损失函数选用多分类交叉熵损失函数
     lossf = nn.CrossEntropyLoss(ignore_index=255)
@@ -88,5 +89,5 @@ if __name__ == "__main__":
 
     from conf import save_path
 
-    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer,
-               num_epochs=50, scheduler=scheduler, save_path=save_path)
+    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer, num_epochs=50,
+               scheduler=scheduler, save_path=save_path, data_path=excel_path)

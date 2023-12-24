@@ -1,18 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+        <dataset>
+        <!-- camvid数据集路径 -->
+        <camvid_path>/home/xu/桌面/dataset/camvid</camvid_path>
+        <!-- cityscapes数据集路径 -->
+        <cityscapes_path>D:\Datasets\cityscapes</cityscapes_path>
+        <!-- 其他数据集路径 -->
+        <!-- ... -->
+        </dataset>>
 
-    <!-- camvid数据集路径 -->
-    <camvid_path>D:\Datasets\camvid</camvid_path>
-    <!-- cityscapes数据集路径 -->
-    <cityscapes_path>D:\Datasets\cityscapes</cityscapes_path>
-    <!-- 其他数据集路径 -->
-    <!-- ... -->
+        <model>
+        <HANet_1HAM>
+            <name>
+                HANet_1HAM
+            </name>
+            <path>
 
-    <!-- 训练好的模型路径 -->
-    <HANet_oneHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\oneHANet\HDAnet_50.pth</HANet_oneHAM_path>
-    <HANet_twoHAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth</HANet_twoHAM_path>
+            </path>
+        </HANet_1HAM>
 
-    <!-- 保存模型的路径 -->
-    <save_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\threeHANet\</save_path>
+        <HANet_2HAM>
+            <name>
+                HANet_2HAM
+            </name>
+            <path>
 
+            </path>
+        </HANet_2HAM>
+
+        <HANet_3HAM>
+            <name>
+                HANet_3HAM
+            </name>
+            <path>
+
+            </path>
+        </HANet_3HAM>
+
+        <HANet_4HAM>
+            <name>
+                HANet_4HAM
+            </name>
+            <path>
+
+            </path>
+        </HANet_4HAM>
+
+
+        <!-- 训练好的模型路径 -->
+        </model>
+        <HANet_1HAM_path>/media/xu/移动硬盘/HDANet/HDANet_1HDAM/HDAnet_50.pth</HANet_1HAM_path>
+        <HANet_2HAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\twoHANet\HDAnet_50.pth</HANet_2HAM_path>
+        <HANet_3HAM_path>C:\Users\Xu Han\Desktop\scholarly achievements\2023大创\checkpoints\oneHANet\HDAnet_50.pth</HANet_3HAM_path>
+        <HANet_4HAM_path>/media/xu/移动硬盘/HDANet/HDANet_4HDAM/HDAnet_50.pth</HANet_4HAM_path>
+
+        <!-- 保存模型的路径 -->
+        <save_path>/media/xu/移动硬盘/HDANet/HDANet_3HDAM/</save_path>
+
+        <!-- camvid数据集路径 -->
+        <camvid_path>/home/xu/桌面/dataset/camvid</camvid_path>
 </configuration>

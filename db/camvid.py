@@ -107,6 +107,7 @@ if __name__ == "__main__":
         # print(label.shape)
 
         _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
+        print(img.shape)
 
         for i in range(img.shape[0]):
             figs[i, 0].imshow(img[i].permute(1, 2, 0))  # Original image

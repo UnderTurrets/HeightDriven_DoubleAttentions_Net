@@ -112,74 +112,112 @@ class DAHead(nn.Module):
 
         return output
 
-
-class HDAnet_oneHAM(nn.Module):
-    def __init__(self, num_classes):
-        super(HDAnet_oneHAM, self).__init__()
-        self.ResNet50 = IntermediateLayerGetter(
-            resnet50(pretrained=True, replace_stride_with_dilation=[False, True, True]),
-            return_layers={'layer4': 'stage4'}
-        )
-
-        self.DANet_Conv = DAHead(in_channels=2048, num_classes=num_classes)
-
-        self.HANet_Conv = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
-                                     r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                     pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-
-    def forward(self, x):
-        feats = self.ResNet50(x)
-        # self.ResNet50返回的是一个字典类型的数据.
-        x = feats["stage4"]
-        represent = x
-        x = self.DANet_Conv(x)
-        x = self.HANet_Conv(represent, x)
-
-        return x
-
-
-class HDAnet_twoHAM(nn.Module):
-    def __init__(self, num_classes):
-        super(HDAnet_twoHAM, self).__init__()
+class HDAnet(nn.Module):
+    def __init__(self, num_classes, HAM_num):
+        super(HDAnet, self).__init__()
         # 将resnet50分为4个stage，其中stage4是最后一个stage
         self.ResNet50 = IntermediateLayerGetter(
             resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer1': 'stage1', 'layer2': 'stage2', 'layer3': 'stage3', 'layer4': 'stage4'}
         )
 
-        self.decoder = DAHead(in_channels=2048, num_classes=num_classes)
+        self.HAMlayer_num = HAM_num
 
-        self.HANet_Conv1 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+        self.DANet_Conv = DAHead(in_channels=2048, num_classes=num_classes)
+
+        self.HANet_Conv1 = HANet_Conv(in_channel=256, out_channel=512, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv2 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
+        self.HANet_Conv2 = HANet_Conv(in_channel=512, out_channel=1024, kernel_size=3,
+                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        self.HANet_Conv3 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        self.HANet_Conv4 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
 
     def forward(self, x):
-        feats = self.ResNet50(x)
-        x = feats["stage3"]
-        represent = x
-        x = feats["stage4"]
-        x = self.HANet_Conv1(represent, x)
-        represent = x
-        x = self.decoder(x)
-        x = self.HANet_Conv2(represent, x)
-        return x
+        if (self.HAMlayer_num == 1):
+            feats = self.ResNet50(x)
+            x = feats["stage4"]
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv4(feats["stage4"], x)
+            return x
 
+        elif (self.HAMlayer_num == 2):
+            feats = self.ResNet50(x)
+            x = self.HANet_Conv3(feats["stage3"], feats["stage4"])
+            represent = x
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv4(represent, x)
+            return x
+
+        elif (self.HAMlayer_num == 3):
+            feats = self.ResNet50(x)
+
+            x = feats["stage2"]
+            x = self.ResNet50['layer3'](x)
+            x = self.HANet_Conv2(feats["stage2"], x)
+
+            represent = x
+            x = self.ResNet50['layer4'](x)
+            x = self.HANet_Conv3(represent, x)
+
+            represent = x
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv4(represent, x)
+            return x
+
+        elif (self.HAMlayer_num == 4):
+            feats = self.ResNet50(x)
+
+            x = feats["stage1"]
+            x = self.ResNet50['layer2'](x)
+            x = self.HANet_Conv1(feats["stage1"], x)
+
+            represent = x
+            x = self.ResNet50['layer3'](x)
+            x = self.HANet_Conv2(represent, x)
+
+            represent = x
+            x = self.ResNet50['layer4'](x)
+            x = self.HANet_Conv3(represent, x)
+
+            represent = x
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv4(represent, x)
+            return x
 
 if __name__ == "__main__":
     import os
-    #根据路径自己修改
-    from conf.__init__ import HANet_oneHAM_path,HANet_twoHAM_path
+    from conf.__init__ import HANet_1HAM_path, HANet_2HAM_path, HANet_3HAM_path, HANet_4HAM_path
+    model_1HAM = HDAnet(num_classes=32, HAM_num=1)
+    model_2HAM = HDAnet(num_classes=32, HAM_num=2)
+    model_3HAM = HDAnet(num_classes=32, HAM_num=3)
+    model_4HAM = HDAnet(num_classes=32, HAM_num=4)
+    # if os.path.exists(HANet_1HAM_path):
+    #     model_1HAM.load_state_dict(torch.load(HANet_1HAM_path), strict=True)
+    #     print("success to load HANet_1HAM")
+    # else:
+    #     print("fail to load HANet_1HAM")
+    if os.path.exists(HANet_2HAM_path):
+        model_2HAM.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
+        print("success to load HANet_2HAM")
+    else:
+        print("fail to load HANet_2HAM")
+    if os.path.exists(HANet_3HAM_path):
+        model_3HAM.load_state_dict(torch.load(HANet_3HAM_path), strict=True)
+        print("success to load HANet_3HAM")
+    else:
+        print("fail to load HANet_3HAM")
+    if os.path.exists(HANet_4HAM_path):
+        model_4HAM.load_state_dict(torch.load(HANet_4HAM_path), strict=True)
+        print("success to load HANet_4HAM")
+    else:
+        print("fail to load HANet_4HAM")
 
-    model_oneHAM = HDAnet_oneHAM(num_classes=32)
-    model_twoHAM = HDAnet_twoHAM(num_classes=32)
-    if (os.path.exists(HANet_oneHAM_path) and os.path.exists(HANet_twoHAM_path)):
-        model_oneHAM.load_state_dict(torch.load(HANet_oneHAM_path), strict=True)
-        model_twoHAM.load_state_dict(torch.load(HANet_twoHAM_path), strict=True)
-        print("success to load")
-    else:print("fail to load")
 
     # for name, param in model.named_parameters():
     #     if param.requires_grad:
@@ -195,8 +233,8 @@ if __name__ == "__main__":
 
     for index, (img, label) in enumerate(test_loader):
 
-        out_oneHAM = model_oneHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_twoHAM = model_twoHAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        # out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_4HAM = model_4HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
         _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
 
@@ -210,12 +248,12 @@ if __name__ == "__main__":
             figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 2].imshow(out_oneHAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
-                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+            # figs[i, 2].imshow(out_1HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+            #                   vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 3].imshow(out_twoHAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+            figs[i, 3].imshow(out_4HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
                               vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
@@ -223,7 +261,7 @@ if __name__ == "__main__":
         # 在第一行图片下面添加标题
         figs[0, 0].set_title("Image")
         figs[0, 1].set_title("Label")
-        figs[0, 2].set_title("oneHAM")
-        figs[0, 3].set_title("twoHAM")
+        figs[0, 2].set_title("none")
+        figs[0, 3].set_title("4HAM")
         plt.show()
         plt.cla()

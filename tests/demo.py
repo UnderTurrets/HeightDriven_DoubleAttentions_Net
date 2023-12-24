@@ -3,15 +3,15 @@ if __name__ == "__main__":
     from network.HDAnet import HDAnet_oneHAM,HDAnet_twoHAM
     import torch
     import os
-    from conf.__init__ import HANet_oneHAM_path, HANet_twoHAM_path
+    from conf.__init__ import HANet_1HAM_path, HANet_2HAM_path
 
     model_oneHAM = HDAnet_oneHAM(num_classes=32)
     model_twoHAM = HDAnet_twoHAM(num_classes=32)
 
 
-    if (os.path.exists(HANet_oneHAM_path) and os.path.exists(HANet_twoHAM_path)):
-        model_oneHAM.load_state_dict(torch.load(HANet_oneHAM_path), strict=True)
-        model_twoHAM.load_state_dict(torch.load(HANet_twoHAM_path), strict=True)
+    if (os.path.exists(HANet_1HAM_path) and os.path.exists(HANet_2HAM_path)):
+        model_oneHAM.load_state_dict(torch.load(HANet_1HAM_path), strict=True)
+        model_twoHAM.load_state_dict(torch.load(HANet_2HAM_path), strict=True)
         print("success to load")
     else:print("fail to load")
 
