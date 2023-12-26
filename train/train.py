@@ -75,20 +75,27 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
 if __name__ == "__main__":
     from db.camvid import train_loader, val_loader
     import network.HDAnet as net
-    from conf import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
+    from conf import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM, save_path
 
-    model = net.HDAnet(num_classes=32, HAM_num=1).cuda()
-    excel_path = "../res/HDAnet_1HAM.xlsx"
-    model_path = HDANet_1HAM["path"]
-    if (os.path.exists(model_path)): model.load_state_dict(torch.load(model_path), strict=True)
+    for i in range(0,5):
+        model = net.HDAnet(num_classes=32, HAM_num=i).cuda()
+        excel_path = "../res/HDAnet_" + str(i) + "HAM.xlsx"
 
-    # 损失函数选用多分类交叉熵损失函数
-    lossf = nn.CrossEntropyLoss(ignore_index=255)
-    # 选用adam优化器来训练
-    optimizer = optim.SGD(model.parameters(), lr=0.1)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
+        model_path=""
+        if (i == 1): model_path = HDANet_1HAM["path"]
+        elif (i == 2): model_path = HDANet_2HAM["path"]
+        elif (i == 3): model_path = HDANet_3HAM["path"]
+        elif (i == 4): model_path = HDANet_4HAM["path"]
+        if (os.path.exists(model_path)):
+            model.load_state_dict(torch.load(model_path), strict=True)
+            print("success to load")
+        else:print("fail to load")
 
-    from conf import save_path
+        # 损失函数选用多分类交叉熵损失函数
+        lossf = nn.CrossEntropyLoss(ignore_index=255)
+        # 选用adam优化器来训练
+        optimizer = optim.SGD(model.parameters(), lr=0.1)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
 
-    train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer, num_epochs=50,
-               scheduler=scheduler, save_path=save_path, data_path=excel_path)
+        train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer, num_epochs=50,
+                   scheduler=scheduler, save_path=save_path, data_path=excel_path)
