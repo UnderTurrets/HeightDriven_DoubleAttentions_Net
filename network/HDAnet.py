@@ -126,21 +126,26 @@ class HDAnet(nn.Module):
 
         self.DANet_Conv = DAHead(in_channels=2048, num_classes=num_classes)
 
-        self.HANet_Conv1 = HANet_Conv(in_channel=3, out_channel=256, kernel_size=3,
-                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv2 = HANet_Conv(in_channel=256, out_channel=512, kernel_size=3,
-                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv3 = HANet_Conv(in_channel=512, out_channel=1024, kernel_size=3,
-                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv4 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
-                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv5 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
-                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
-                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        if HAM_num >= 5:
+            self.HANet_Conv1 = HANet_Conv(in_channel=3, out_channel=256, kernel_size=3,
+                                          r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                          pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        if HAM_num >= 4:
+            self.HANet_Conv2 = HANet_Conv(in_channel=256, out_channel=512, kernel_size=3,
+                                          r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                          pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        if HAM_num >= 3:
+            self.HANet_Conv3 = HANet_Conv(in_channel=512, out_channel=1024, kernel_size=3,
+                                          r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                          pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        if HAM_num >= 2:
+            self.HANet_Conv4 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+                                          r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                          pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        if HAM_num >= 1:
+            self.HANet_Conv5 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
+                                          r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                          pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
 
     def forward(self, x):
         if (self.HAMlayer_num == 1):
@@ -225,9 +230,9 @@ for i in range(1, 6):
     model_file = os.path.join(model_dict["HDANet_" + str(i) + "HAM"]["save_path"],
                               model_dict["HDANet_" + str(i) + "HAM"]["model_file"])
     if (os.path.exists(model_file)):
-        model.load_state_dict(torch.load(model_file), strict=True)
+        model.load_state_dict(torch.load(model_file), strict=False)
         print(f"{__name__}:success to load {model_file}")
-    # else:
+    else:
         print(f"{__name__}:fail to load {model_file}")
 
     model_list.append(model)
@@ -238,11 +243,13 @@ model_3HAM = model_list[2]
 model_4HAM = model_list[3]
 model_5HAM = model_list[4]
 
+
+
+if __name__ == "__main__":
     # for name, param in model.named_parameters():
     #     if param.requires_grad:
     #         print(name)
 
-if __name__ == "__main__":
     from db.camvid import test_loader
     from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt
@@ -253,8 +260,10 @@ if __name__ == "__main__":
 
     for index, (img, label) in enumerate(test_loader):
 
-        # out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_4HAM = model_4HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        img = img.to(torch.device('cuda:0'))
+        out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_5HAM = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        img = img.to("cpu")
 
         _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
 
@@ -268,12 +277,12 @@ if __name__ == "__main__":
             figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            # figs[i, 2].imshow(out_1HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
-            #                   vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+            figs[i, 2].imshow(out_1HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 3].imshow(out_4HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+            figs[i, 3].imshow(out_5HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
                               vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
             figs[i, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
             figs[i, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
@@ -281,7 +290,7 @@ if __name__ == "__main__":
         # 在第一行图片下面添加标题
         figs[0, 0].set_title("Image")
         figs[0, 1].set_title("Label")
-        figs[0, 2].set_title("none")
-        figs[0, 3].set_title("4HAM")
+        figs[0, 2].set_title("seg1")
+        figs[0, 3].set_title("seg2")
         plt.show()
         plt.cla()

@@ -50,7 +50,7 @@ class CamVidDataset(Dataset):
         super(CamVidDataset, self).__init__()
 
         self.transform = A.Compose([
-            A.Resize(224, 224),
+            # A.Resize(360, 480),
             A.Normalize(),
             ToTensorV2(),
         ])
