@@ -4,6 +4,7 @@ email:736946693@qq.com
 '''
 import xml.etree.ElementTree as ET
 
+
 def element_to_dict(element):
     """将XML元素递归转换为字典"""
     result = {}
@@ -33,8 +34,10 @@ def element_to_dict(element):
 
     return result
 
+
 # 读取配置信息
 import os
+
 # 获取当前脚本所在的目录
 current_directory = os.path.dirname(os.path.abspath(__file__))
 # 切换到该目录
@@ -47,12 +50,8 @@ root = tree.getroot()
 xml_dict = element_to_dict(root)
 
 # 需要的变量
-camvid_path=xml_dict["dataset"]["camvid_path"]
-HDANet_1HAM=xml_dict["model"]["HDANet_1HAM"]
-HDANet_2HAM=xml_dict["model"]["HDANet_2HAM"]
-HDANet_3HAM=xml_dict["model"]["HDANet_3HAM"]
-HDANet_4HAM=xml_dict["model"]["HDANet_4HAM"]
-save_path=xml_dict["save_path"]
+camvid_path = xml_dict["dataset"]["camvid_path"]
+model_dict = xml_dict["model"]
 if __name__ == "__main__":
     # 打印嵌套字典
     import pprint

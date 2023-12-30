@@ -2,6 +2,7 @@ from torchvision.models import resnet50
 from torchvision.models._utils import IntermediateLayerGetter
 from network.HANet import HANet_Conv
 
+
 def initialize_weights(*models):
     """
     Initialize Model Weights
@@ -21,8 +22,10 @@ def initialize_weights(*models):
                 module.weight.data.fill_(1)
                 module.bias.data.zero_()
 
+
 import torch
 import torch.nn as nn
+
 gpu = torch.device("cuda")
 
 
@@ -50,7 +53,6 @@ class PositionAttention(nn.Module):
         return E
 
 
-
 class ChannelAttention(nn.Module):
     def __init__(self):
         super(ChannelAttention, self).__init__()
@@ -64,7 +66,6 @@ class ChannelAttention(nn.Module):
         X = torch.matmul(X.transpose(1, 2), x.view(b, c, h * w)).view(b, c, h, w)
         X = self.beta * X + x
         return X
-
 
 
 class DAHead(nn.Module):
@@ -112,7 +113,6 @@ class DAHead(nn.Module):
         return output
 
 
-
 class HDAnet(nn.Module):
     def __init__(self, num_classes, HAM_num):
         super(HDAnet, self).__init__()
@@ -126,16 +126,19 @@ class HDAnet(nn.Module):
 
         self.DANet_Conv = DAHead(in_channels=2048, num_classes=num_classes)
 
-        self.HANet_Conv1 = HANet_Conv(in_channel=256, out_channel=512, kernel_size=3,
+        self.HANet_Conv1 = HANet_Conv(in_channel=3, out_channel=256, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv2 = HANet_Conv(in_channel=512, out_channel=1024, kernel_size=3,
+        self.HANet_Conv2 = HANet_Conv(in_channel=256, out_channel=512, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv3 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+        self.HANet_Conv3 = HANet_Conv(in_channel=512, out_channel=1024, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
-        self.HANet_Conv4 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
+        self.HANet_Conv4 = HANet_Conv(in_channel=1024, out_channel=2048, kernel_size=3,
+                                      r_factor=64, layer=3, pos_injection=2, is_encoding=1,
+                                      pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
+        self.HANet_Conv5 = HANet_Conv(in_channel=2048, out_channel=num_classes, kernel_size=3,
                                       r_factor=64, layer=3, pos_injection=2, is_encoding=1,
                                       pos_rfactor=8, pooling='mean', dropout_prob=0, pos_noise=0)
 
@@ -144,88 +147,102 @@ class HDAnet(nn.Module):
             feats = self.ResNet50(x)
             x = feats["stage4"]
             x = self.DANet_Conv(x)
-            x = self.HANet_Conv4(feats["stage4"], x)
-            return x
+            x = self.HANet_Conv5(feats["stage4"], x)
 
         elif (self.HAMlayer_num == 2):
             feats = self.ResNet50(x)
-            x = self.HANet_Conv3(feats["stage3"], feats["stage4"])
+            x = self.HANet_Conv4(feats["stage3"], feats["stage4"])
             represent = x
             x = self.DANet_Conv(x)
-            x = self.HANet_Conv4(represent, x)
-            return x
+            x = self.HANet_Conv5(represent, x)
 
         elif (self.HAMlayer_num == 3):
             feats = self.ResNet50(x)
 
             x = feats["stage2"]
             x = self.ResNet50['layer3'](x)
-            x = self.HANet_Conv2(feats["stage2"], x)
+            x = self.HANet_Conv3(feats["stage2"], x)
 
             represent = x
             x = self.ResNet50['layer4'](x)
-            x = self.HANet_Conv3(represent, x)
+            x = self.HANet_Conv4(represent, x)
 
             represent = x
             x = self.DANet_Conv(x)
-            x = self.HANet_Conv4(represent, x)
-            return x
+            x = self.HANet_Conv5(represent, x)
 
         elif (self.HAMlayer_num == 4):
             feats = self.ResNet50(x)
 
             x = feats["stage1"]
             x = self.ResNet50['layer2'](x)
-            x = self.HANet_Conv1(feats["stage1"], x)
+            x = self.HANet_Conv2(feats["stage1"], x)
 
             represent = x
             x = self.ResNet50['layer3'](x)
-            x = self.HANet_Conv2(represent, x)
-
-            represent = x
-            x = self.ResNet50['layer4'](x)
             x = self.HANet_Conv3(represent, x)
 
             represent = x
-            x = self.DANet_Conv(x)
+            x = self.ResNet50['layer4'](x)
             x = self.HANet_Conv4(represent, x)
-            return x
+
+            represent = x
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv5(represent, x)
+
+        elif (self.HAMlayer_num == 5):
+            feats = self.ResNet50(x)
+
+            represent = x
+            x = feats["stage1"]
+            x = self.HANet_Conv1(represent, x)
+
+            x = self.ResNet50['layer2'](x)
+            x = self.HANet_Conv2(feats["stage1"], x)
+
+            represent = x
+            x = self.ResNet50['layer3'](x)
+            x = self.HANet_Conv3(represent, x)
+
+            represent = x
+            x = self.ResNet50['layer4'](x)
+            x = self.HANet_Conv4(represent, x)
+
+            represent = x
+            x = self.DANet_Conv(x)
+            x = self.HANet_Conv5(represent, x)
+        return x
 
 
 
-if __name__ == "__main__":
-    import os
-    from conf.__init__ import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
+from conf import model_dict
+import os
+model_list = []
+for i in range(1, 6):
+    model = HDAnet(num_classes=32, HAM_num=i).cuda()
 
-    model_1HAM = HDAnet(num_classes=32, HAM_num=1)
-    model_2HAM = HDAnet(num_classes=32, HAM_num=2)
-    model_3HAM = HDAnet(num_classes=32, HAM_num=3)
-    model_4HAM = HDAnet(num_classes=32, HAM_num=4)
-    if os.path.exists(HDANet_1HAM["path"]):
-        model_1HAM.load_state_dict(torch.load(HDANet_1HAM["path"]), strict=True)
-        print("success to load HDANet_1HAM")
-    else:
-        print("fail to load HDANet_1HAM")
-    if os.path.exists(HDANet_2HAM["path"]):
-        model_2HAM.load_state_dict(torch.load(HDANet_2HAM["path"]), strict=True)
-        print("success to load HDANet_2HAM")
-    else:
-        print("fail to load HDANet_2HAM")
-    if os.path.exists(HDANet_3HAM["path"]):
-        model_3HAM.load_state_dict(torch.load(HDANet_3HAM["path"]), strict=True)
-        print("success to load HDANet_3HAM")
-    else:
-        print("fail to load HDANet_3HAM")
-    if os.path.exists(HDANet_4HAM["path"]):
-        model_4HAM.load_state_dict(torch.load(HDANet_4HAM["path"]), strict=True)
-        print("success to load HDANet_4HAM")
-    else:
-        print("fail to load HDANet_4HAM")
+    # 加载训练好的模型
+    model_file = os.path.join(model_dict["HDANet_" + str(i) + "HAM"]["save_path"],
+                              model_dict["HDANet_" + str(i) + "HAM"]["model_file"])
+    if (os.path.exists(model_file)):
+        model.load_state_dict(torch.load(model_file), strict=True)
+        print(f"{__name__}:success to load {model_file}")
+    # else:
+        print(f"{__name__}:fail to load {model_file}")
+
+    model_list.append(model)
+
+model_1HAM = model_list[0]
+model_2HAM = model_list[1]
+model_3HAM = model_list[2]
+model_4HAM = model_list[3]
+model_5HAM = model_list[4]
 
     # for name, param in model.named_parameters():
     #     if param.requires_grad:
     #         print(name)
 
+if __name__ == "__main__":
     from db.camvid import test_loader
     from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt

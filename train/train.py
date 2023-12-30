@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
-
 from d2l import torch as d2l
 
 
@@ -67,35 +66,32 @@ def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler,
         df['time'] = time_list
         df.to_excel(data_path)
         # ----------------保存模型-------------------
-        if np.mod(epoch + 1, 2) == 0:
-            os.chdir(save_path)
-            torch.save(model.state_dict(), f'HDAnet_{epoch + 1}.pth')
+        if np.mod(epoch + 1, 10) == 0:
+            torch.save(model.state_dict(), os.path.join(save_path,f'HDAnet_{epoch + 1}.pth'))
 
 
 if __name__ == "__main__":
     from db.camvid import train_loader, val_loader
     import network.HDAnet as net
-    from conf import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM, save_path
+    from conf import model_dict
 
-    for i in range(0,5):
+    for i in range(1,6):
         model = net.HDAnet(num_classes=32, HAM_num=i).cuda()
         excel_path = "../res/HDAnet_" + str(i) + "HAM.xlsx"
+        save_path = model_dict["HDANet_" + str(i) + "HAM"]["save_path"]
 
-        model_path=""
-        if (i == 1): model_path = HDANet_1HAM["path"]
-        elif (i == 2): model_path = HDANet_2HAM["path"]
-        elif (i == 3): model_path = HDANet_3HAM["path"]
-        elif (i == 4): model_path = HDANet_4HAM["path"]
-        if (os.path.exists(model_path)):
-            model.load_state_dict(torch.load(model_path), strict=True)
-            print("success to load")
-        else:print("fail to load")
+        model_file = os.path.join(model_dict["HDANet_" + str(i) + "HAM"]["save_path"],
+                                  model_dict["HDANet_" + str(i) + "HAM"]["model_file"])
+        if (os.path.exists(model_file)):
+            model.load_state_dict(torch.load(model_file), strict=True)
+            print(f"success to load {model_file}")
+        else:
+            print(f"fail to load {model_file}")
 
         # 损失函数选用多分类交叉熵损失函数
         lossf = nn.CrossEntropyLoss(ignore_index=255)
         # 选用adam优化器来训练
         optimizer = optim.SGD(model.parameters(), lr=0.1)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1, last_epoch=-1)
-
         train_ch13(net=model, train_iter=train_loader, test_iter=val_loader, loss=lossf, trainer=optimizer, num_epochs=50,
                    scheduler=scheduler, save_path=save_path, data_path=excel_path)

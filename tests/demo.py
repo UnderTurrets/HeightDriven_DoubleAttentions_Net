@@ -1,35 +1,6 @@
 if __name__ == "__main__":
 
-    from network.HDAnet import HDAnet
-    import torch
-    import os
-    from conf.__init__ import HDANet_1HAM, HDANet_2HAM, HDANet_3HAM, HDANet_4HAM
-
-    model_1HAM = HDAnet(num_classes=32, HAM_num=1)
-    model_2HAM = HDAnet(num_classes=32, HAM_num=2)
-    model_3HAM = HDAnet(num_classes=32, HAM_num=3)
-    model_4HAM = HDAnet(num_classes=32, HAM_num=4)
-    if os.path.exists(HDANet_1HAM["path"]):
-        model_1HAM.load_state_dict(torch.load(HDANet_1HAM["path"]), strict=True)
-        print("success to load HDANet_1HAM")
-    else:
-        print("fail to load HDANet_1HAM")
-    if os.path.exists(HDANet_2HAM["path"]):
-        model_2HAM.load_state_dict(torch.load(HDANet_2HAM["path"]), strict=True)
-        print("success to load HDANet_2HAM")
-    else:
-        print("fail to load HDANet_2HAM")
-    if os.path.exists(HDANet_3HAM["path"]):
-        model_3HAM.load_state_dict(torch.load(HDANet_3HAM["path"]), strict=True)
-        print("success to load HDANet_3HAM")
-    else:
-        print("fail to load HDANet_3HAM")
-    if os.path.exists(HDANet_4HAM["path"]):
-        model_4HAM.load_state_dict(torch.load(HDANet_4HAM["path"]), strict=True)
-        print("success to load HDANet_4HAM")
-    else:
-        print("fail to load HDANet_4HAM")
-
+    from network.HDAnet import model_1HAM, model_2HAM, model_3HAM, model_4HAM, model_5HAM
     from db.camvid import Cam_COLORMAP, Cam_CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
