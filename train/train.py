@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     # 选择HAM层数
     i = 4
-    model = net.HDAnet(num_classes=32, HAM_num=i).cuda()
+    model = net.HDAnet(num_classes=12, HAM_num=i).cuda()
     excel_path = "../res/HDAnet_" + str(i) + "HAM.xlsx"
     save_path = model_dict["HDANet_" + str(i) + "HAM"]["save_path"]
 

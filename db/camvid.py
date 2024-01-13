@@ -50,7 +50,7 @@ class CamVidDataset(Dataset):
         super(CamVidDataset, self).__init__()
 
         self.transform = A.Compose([
-            # A.Resize(224, 224),
+            A.Resize(224, 224),
             A.Normalize(),
             ToTensorV2(),
         ])
@@ -104,7 +104,12 @@ if __name__ == "__main__":
     from matplotlib.colors import ListedColormap
 
     for index, (img, label) in enumerate(train_loader):
-        # print(label.shape)
+        print(label.shape)
+
+        unique_values = np.unique(label)
+        # Check the number of unique values
+        num_unique_values = len(unique_values)
+        print("Number of unique values in labels:", num_unique_values)
 
         _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
         print(img.shape)

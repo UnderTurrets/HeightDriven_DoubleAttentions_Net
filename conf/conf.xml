@@ -3,8 +3,8 @@
         <dataset>
             <!-- camvid数据集路径 -->
             <camvid_path>
-                /home/xu/桌面/dataset/camvid
-<!--                D:\HDANet\dataset\camvid-->
+<!--                /home/xu/桌面/dataset/camvid-->
+                D:\Datasets\camvid
             </camvid_path>
             <!-- cityscapes数据集路径 -->
             <cityscapes_path>D:\Datasets\cityscapes</cityscapes_path>
@@ -20,8 +20,8 @@
                 </name>
 
                 <save_path>
-<!--                    C:\Users\Xu Han\Desktop\undergraduate achievements\2023大创\checkpoints\HDANet_1HAM-->
-                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_1HAM
+                    D:\Datasets\camvid\checkpoints\360x480\HDANet_1HAM
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_1HAM-->
                 </save_path>
 
                 <model_file>
@@ -49,7 +49,8 @@
                 </name>
 
                 <save_path>
-                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_3HAM
+                    D:\Datasets\camvid\checkpoints\360x480\HDANet_3HAM
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_3HAM-->
                 </save_path>
 
                 <model_file>

@@ -224,7 +224,7 @@ from conf import model_dict
 import os
 model_list = []
 for i in range(1, 6):
-    model = HDAnet(num_classes=32, HAM_num=i).cuda()
+    model = HDAnet(num_classes=12, HAM_num=i).cuda()
 
     # 加载训练好的模型
     model_file = os.path.join(model_dict["HDANet_" + str(i) + "HAM"]["save_path"],
@@ -262,7 +262,7 @@ if __name__ == "__main__":
 
         img = img.to(torch.device('cuda:0'))
         out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_5HAM = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_5HAM = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
 
         _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
