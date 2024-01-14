@@ -258,36 +258,72 @@ if __name__ == "__main__":
     # 使用Cam_COLORMAP创建颜色映射
     seg_cmap = ListedColormap(Cam_COLORMAP)
 
+    # for index, (img, label) in enumerate(val_loader):
+    #
+    #     img = img.to(torch.device('cuda:0'))
+    #     out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    #     out_5HAM = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    #     img = img.to("cpu")
+    #
+    #     _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
+    #
+    #     for i in range(img.shape[0]):
+    #         figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
+    #         figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
+    #         figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+    #
+    #         figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+    #                           vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+    #         figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
+    #         figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+    #
+    #         figs[i, 2].imshow(out_1HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+    #                           vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+    #         figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
+    #         figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
+    #
+    #         figs[i, 3].imshow(out_5HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
+    #                           vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+    #         figs[i, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
+    #         figs[i, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
+    #
+    #     # 在第一行图片下面添加标题
+    #     figs[0, 0].set_title("Image")
+    #     figs[0, 1].set_title("Label")
+    #     figs[0, 2].set_title("seg1")
+    #     figs[0, 3].set_title("seg2")
+    #     plt.show()
+    #     plt.cla()
+
     for index, (img, label) in enumerate(val_loader):
+        print(img.shape)
+        print(label.shape)
 
         img = img.to(torch.device('cuda:0'))
-        out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_5HAM = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_2 = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
+        print(img.shape)
 
-        _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
 
-        for i in range(img.shape[0]):
-            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # 原始图片
-            figs[i, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        _, figs = plt.subplots(2, 4, figsize=(10, 10))
+        plt.figure(figsize=(10, 10))
+        figs[0, 0].imshow(img[0, :, :, :].moveaxis(0, 2))
+        figs[0, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[0, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
-                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
-            figs[i, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[0, 1].imshow(label[0, :, :])
+        figs[0, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[0, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 2].imshow(out_1HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
-                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
-            figs[i, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[0, 2].imshow(out_1[0, :, :])
+        figs[0, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[0, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-            figs[i, 3].imshow(out_5HAM[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0,
-                              vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
-            figs[i, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
-            figs[i, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[0, 3].imshow(out_2[0, :, :])
+        figs[0, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[0, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        # 在第一行图片下面添加标题
         figs[0, 0].set_title("Image")
         figs[0, 1].set_title("Label")
         figs[0, 2].set_title("seg1")

@@ -25,7 +25,7 @@
                 </save_path>
 
                 <model_file>
-                    HDAnet_50.pth
+                    HDAnet_30.pth
                 </model_file>
             </HDANet_1HAM>
 
@@ -54,7 +54,7 @@
                 </save_path>
 
                 <model_file>
-                    HDAnet_50.pth
+                    HDAnet_20.pth
                 </model_file>
             </HDANet_3HAM>
 

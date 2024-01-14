@@ -94,36 +94,53 @@ test_dataset = CamVidDataset(
     y_test_dir,
 )
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
-test_loader = DataLoader(test_dataset,batch_size=4,shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=True)
+test_loader = DataLoader(test_dataset,batch_size=16,shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     # Add this import for color mapping
     from matplotlib.colors import ListedColormap
 
+    # for index, (img, label) in enumerate(train_loader):
+    #     print(label.shape)
+    #
+    #     unique_values = np.unique(label)
+    #     # Check the number of unique values
+    #     num_unique_values = len(unique_values)
+    #     print("Number of unique values in labels:", num_unique_values)
+    #
+    #     _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
+    #     print(img.shape)
+    #
+    #     for i in range(img.shape[0]):
+    #         figs[i, 0].imshow(img[i].permute(1, 2, 0))  # Original image
+    #         figs[i, 0].axes.get_xaxis().set_visible(False)
+    #         figs[i, 0].axes.get_yaxis().set_visible(False)
+    #         figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0, vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
+    #         figs[i, 1].axes.get_xaxis().set_visible(False)
+    #         figs[i, 1].axes.get_yaxis().set_visible(False)
+    #
+    #     # 在第一行图片下面添加标题
+    #     figs[0, 0].set_title("Image")
+    #     figs[0, 1].set_title("Label")
+    #     plt.show()
+    #     plt.cla()
+
     for index, (img, label) in enumerate(train_loader):
+        print(img.shape)
         print(label.shape)
 
-        unique_values = np.unique(label)
-        # Check the number of unique values
-        num_unique_values = len(unique_values)
-        print("Number of unique values in labels:", num_unique_values)
+        plt.figure(figsize=(10, 10))
+        plt.subplot(221)
+        plt.imshow(img[0, :, :, :].moveaxis(0, 2))
+        plt.subplot(222)
+        plt.imshow(label[0, :, :])
 
-        _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
-        print(img.shape)
+        plt.subplot(223)
+        plt.imshow(img[1, :, :, :].moveaxis(0, 2))
+        plt.subplot(224)
+        plt.imshow(label[1, :, :])
 
-        for i in range(img.shape[0]):
-            figs[i, 0].imshow(img[i].permute(1, 2, 0))  # Original image
-            figs[i, 0].axes.get_xaxis().set_visible(False)
-            figs[i, 0].axes.get_yaxis().set_visible(False)
-            figs[i, 1].imshow(label[i], cmap=ListedColormap(Cam_COLORMAP), vmin=0, vmax=len(Cam_CLASSES) - 1)  # Apply colormap to label
-            figs[i, 1].axes.get_xaxis().set_visible(False)
-            figs[i, 1].axes.get_yaxis().set_visible(False)
-
-        # 在第一行图片下面添加标题
-        figs[0, 0].set_title("Image")
-        figs[0, 1].set_title("Label")
         plt.show()
-        plt.cla()
