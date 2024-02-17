@@ -301,32 +301,35 @@ if __name__ == "__main__":
 
         img = img.to(torch.device('cuda:0'))
         out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_2 = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
         print(img.shape)
 
 
-        _, figs = plt.subplots(2, 4, figsize=(10, 10))
-        plt.figure(figsize=(10, 10))
-        figs[0, 0].imshow(img[0, :, :, :].moveaxis(0, 2))
-        figs[0, 0].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[0, 0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        _, figs = plt.subplots(1, 4)
 
-        figs[0, 1].imshow(label[0, :, :])
-        figs[0, 1].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[0, 1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[0].imshow(img[0, :, :, :].moveaxis(0, 2))
+        figs[0].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[0].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        figs[0, 2].imshow(out_1[0, :, :])
-        figs[0, 2].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[0, 2].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[1].imshow(label[0, :, :])
+        figs[1].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[1].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        figs[0, 3].imshow(out_2[0, :, :])
-        figs[0, 3].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[0, 3].axes.get_yaxis().set_visible(False)  # 去掉y轴
+        figs[2].imshow(out_1[0, :, :])
+        figs[2].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[2].axes.get_yaxis().set_visible(False)  # 去掉y轴
 
-        figs[0, 0].set_title("Image")
-        figs[0, 1].set_title("Label")
-        figs[0, 2].set_title("seg1")
-        figs[0, 3].set_title("seg2")
+        figs[3].imshow(out_2[0, :, :])
+        figs[3].axes.get_xaxis().set_visible(False)  # 去掉x轴
+        figs[3].axes.get_yaxis().set_visible(False)  # 去掉y轴
+
+        figs[0].set_title("Image")
+        figs[1].set_title("Label")
+        figs[2].set_title("seg1")
+        figs[3].set_title("seg2")
+
+        plt.savefig("../res/demo.png")
+
         plt.show()
         plt.cla()

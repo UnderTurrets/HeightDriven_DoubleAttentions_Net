@@ -5,9 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
+
 from d2l import torch as d2l
-
-
 def train_ch13(net, train_iter, test_iter, loss, trainer, num_epochs, scheduler, save_path, data_path,
                devices=d2l.try_all_gpus()):
     if os.path.exists(save_path) == True:

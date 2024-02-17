@@ -100,6 +100,7 @@ test_loader = DataLoader(test_dataset,batch_size=16,shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
+
     # Add this import for color mapping
     from matplotlib.colors import ListedColormap
 
@@ -128,11 +129,16 @@ if __name__ == "__main__":
     #     plt.show()
     #     plt.cla()
 
+
     for index, (img, label) in enumerate(train_loader):
         print(img.shape)
         print(label.shape)
 
-        plt.figure(figsize=(10, 10))
+        unique_values = np.unique(label)
+        # Check the number of unique values
+        num_unique_values = len(unique_values)
+        print("Number of unique values in labels:", num_unique_values)
+
         plt.subplot(221)
         plt.imshow(img[0, :, :, :].moveaxis(0, 2))
         plt.subplot(222)
