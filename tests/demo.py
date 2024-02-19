@@ -1,26 +1,28 @@
 if __name__ == "__main__":
 
-    from network.HDAnet import model_1HAM, model_2HAM, model_3HAM, model_4HAM, model_5HAM
+    from network.HDAnet import model_1HAM
     import matplotlib.pyplot as plt
     import torch
 
     from PIL import Image
 
     # 下载的测试图片路径
-    img_path = r"C:\Users\Xu Han\Desktop\R-C.jpg"
+    img_path = r"D:\Datasets\cityscapes\leftImg8bit_trainvaltest\leftImg8bit\val\lindau\lindau_000000_000019_leftImg8bit.png"
     img = Image.open(img_path)
 
     from torchvision import transforms
 
     # 使用transforms将图像转换成合适的形状和通道顺序
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),  # 调整大小
+        transforms.Resize((400, 400)),  # 调整大小
         transforms.ToTensor(),  # 转换成张量
     ])
 
     img = transform(img).unsqueeze(0)  # 增加维度 batch_size
     img = img.to(torch.device('cuda:0'))
+
     out = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+
     img = img.to('cpu')
 
     _, figs = plt.subplots(1, 2,)

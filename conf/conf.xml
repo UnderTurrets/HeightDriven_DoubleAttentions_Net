@@ -26,8 +26,8 @@
                 </name>
 
                 <save_path>
-                    D:\Datasets\camvid\checkpoints\360x480\HDANet_1HAM
-<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_1HAM-->
+                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_1HAM-->
                 </save_path>
 
                 <model_file>
@@ -41,7 +41,8 @@
                 </name>
 
                 <save_path>
-                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_2HAM
+                    D:\models\HDANet\camvid360x480\2HAM\HDAnet_50.pth
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_2HAM-->
                 </save_path>
 
                 <model_file>
@@ -55,8 +56,8 @@
                 </name>
 
                 <save_path>
-                    D:\Datasets\camvid\checkpoints\360x480\HDANet_3HAM
-<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_3HAM-->
+                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_3HAM-->
                 </save_path>
 
                 <model_file>
@@ -70,7 +71,8 @@
                 </name>
 
                 <save_path>
-                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_4HAM
+                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_4HAM-->
                 </save_path>
 
                 <model_file>
@@ -83,8 +85,8 @@
                     HANet_5HAM
                 </name>
                 <save_path>
-                    D:\Datasets\camvid\checkpoints\360x480\HDANet_5HAM
-<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/480-360/HDANet_5HAM-->
+                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_5HAM-->
                 </save_path>
 
                 <model_file>
