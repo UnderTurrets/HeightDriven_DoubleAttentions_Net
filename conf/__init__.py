@@ -51,7 +51,9 @@ xml_dict = element_to_dict(root)
 
 # 需要的变量
 camvid_path = xml_dict["dataset"]["camvid_path"]
+cityscapes_path = xml_dict["dataset"]["cityscapes_path"]
 model_dict = xml_dict["model"]
+
 if __name__ == "__main__":
     # 打印嵌套字典
     import pprint

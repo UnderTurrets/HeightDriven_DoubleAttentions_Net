@@ -1,42 +1,65 @@
 if __name__ == "__main__":
 
-    from network.HDAnet import model_1HAM
+    from network.HDAnet import model_5HAM
     import matplotlib.pyplot as plt
     import torch
+    import numpy as np
 
     from PIL import Image
 
-    # 下载的测试图片路径
-    img_path = r"D:\Datasets\cityscapes\leftImg8bit_trainvaltest\leftImg8bit\val\lindau\lindau_000000_000019_leftImg8bit.png"
-    img = Image.open(img_path)
+    # 测试图片路径
+    img_path = r"D:\Datasets\cityscapes\leftImg8bit_trainvaltest\val\lindau\lindau_000000_000019_leftImg8bit.png"
+    img = np.array(Image.open(img_path).convert('RGB'))
 
-    from torchvision import transforms
+    # 颜色映射
+    from db.camvid import COLORMAP as Camvid_COLORMAP
+
 
     # 使用transforms将图像转换成合适的形状和通道顺序
-    transform = transforms.Compose([
-        transforms.Resize((400, 400)),  # 调整大小
-        transforms.ToTensor(),  # 转换成张量
+    import albumentations
+    from albumentations.pytorch.transforms import ToTensorV2
+    transform = albumentations.Compose([
+        albumentations.Resize(360, 480),  # 调整大小
+
+        albumentations.Normalize(),
+        ToTensorV2(),  # 转换成张量
     ])
+    img = transform(image=img)["image"].unsqueeze(0)  # 增加维度 batch_size
 
-    img = transform(img).unsqueeze(0)  # 增加维度 batch_size
+    # import torchvision.transforms as transforms
+    # transform = transforms.Compose([
+    #
+    #
+    #     # A.HorizontalFlip(),
+    #     # A.RandomBrightnessContrast(),
+    #     # A.RandomSnow(),
+    #
+    #     transforms.ToTensor(),
+    #     transforms.Resize(size=(500, 1000)),
+    #     transforms.Normalize(
+    #         mean=(0.485, 0.456, 0.406),
+    #         std=(0.229, 0.224, 0.225),
+    #     ),
+    # ])
+    # img = transform(img).unsqueeze(0)  # 增加维度 batch_size
+
     img = img.to(torch.device('cuda:0'))
-
-    out = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    out = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
 
     img = img.to('cpu')
 
-    _, figs = plt.subplots(1, 2,)
-
-    figs[0].imshow(img[0,:,:,:].moveaxis(0, 2))  # 原始图片
-    figs[0].axes.get_xaxis().set_visible(False)  # 去掉x轴
-    figs[0].axes.get_yaxis().set_visible(False)  # 去掉y轴
-
-    figs[1].imshow(out[0,:,:])  # Apply colormap to label
-    figs[1].axes.get_xaxis().set_visible(False)  # 去掉x轴
-    figs[1].axes.get_yaxis().set_visible(False)  # 去掉y轴
-
-    # 在第一行图片下面添加标题
+    _, figs = plt.subplots(1, 2,figsize=(10,10))
+    # 添加标题
     figs[0].set_title("Image")
     figs[1].set_title("segnet")
+
+    figs[0].imshow(img[0].permute(1, 2, 0))  # 原始图片
+    figs[0].axis('off')
+
+    colored_mask = np.zeros((out[0].shape[0], out[0].shape[1], 3), dtype=np.uint8)
+    for j in range(len(Camvid_COLORMAP)):
+        colored_mask[out[0] == j] = Camvid_COLORMAP[j]
+    figs[1].imshow(colored_mask)  # Apply colormap to label
+    figs[1].axis('off')
+
     plt.show()
-    plt.cla()

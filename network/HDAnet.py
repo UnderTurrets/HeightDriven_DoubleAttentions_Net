@@ -246,23 +246,21 @@ model_5HAM = model_list[4]
 
 
 if __name__ == "__main__":
-    # for name, param in model.named_parameters():
-    #     if param.requires_grad:
-    #         print(name)
-
     from db.camvid import val_loader
-    from db.camvid import Cam_COLORMAP, Cam_CLASSES
+    from db.camvid import COLORMAP as Cam_COLORMAP
+    from db.camvid import CLASSES as Cam_CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
+    import numpy as np
 
+    # 映射时会产生不知何种原因的毛刺，很难看
     # 使用Cam_COLORMAP创建颜色映射
-    seg_cmap = ListedColormap(Cam_COLORMAP)
-
+    # seg_cmap = ListedColormap(Cam_COLORMAP)
     # for index, (img, label) in enumerate(val_loader):
     #
     #     img = img.to(torch.device('cuda:0'))
     #     out_1HAM = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-    #     out_5HAM = model_3HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+    #     out_5HAM = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
     #     img = img.to("cpu")
     #
     #     _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
@@ -293,43 +291,40 @@ if __name__ == "__main__":
     #     figs[0, 2].set_title("seg1")
     #     figs[0, 3].set_title("seg2")
     #     plt.show()
-    #     plt.cla()
 
     for index, (img, label) in enumerate(val_loader):
-        print(img.shape)
-        print(label.shape)
-
         img = img.to(torch.device('cuda:0'))
         out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
-        print(img.shape)
 
+        _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
+        figs[0, 0].set_title("Image")
+        figs[0, 1].set_title("Label")
+        figs[0, 2].set_title("seg1")
+        figs[0, 3].set_title("seg2")
 
-        _, figs = plt.subplots(1, 4)
+        for i in range(img.shape[0]):
+            # Display original image
+            figs[i, 0].imshow(img[i].permute(1, 2, 0))
+            figs[i, 0].axis('off')
 
-        figs[0].imshow(img[0, :, :, :].moveaxis(0, 2))
-        figs[0].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[0].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            # Map mask to colors and display segmented mask with color mapping
+            colored_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
+            out_1_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
+            out_2_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
 
-        figs[1].imshow(label[0, :, :])
-        figs[1].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[1].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            for j in range(len(Cam_COLORMAP)):
+                colored_mask[label[i] == j] = Cam_COLORMAP[j]
+                out_1_mask[out_1[i] == j] = Cam_COLORMAP[j]
+                out_2_mask[out_2[i] == j] = Cam_COLORMAP[j]
 
-        figs[2].imshow(out_1[0, :, :])
-        figs[2].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[2].axes.get_yaxis().set_visible(False)  # 去掉y轴
+            figs[i, 1].imshow(colored_mask)
+            figs[i, 1].axis('off')
+            figs[i, 2].imshow(out_1_mask)
+            figs[i, 2].axis('off')
+            figs[i, 3].imshow(out_2_mask)
+            figs[i, 3].axis('off')
 
-        figs[3].imshow(out_2[0, :, :])
-        figs[3].axes.get_xaxis().set_visible(False)  # 去掉x轴
-        figs[3].axes.get_yaxis().set_visible(False)  # 去掉y轴
-
-        figs[0].set_title("Image")
-        figs[1].set_title("Label")
-        figs[2].set_title("seg1")
-        figs[3].set_title("seg2")
-
-        plt.savefig("../res/demo.png")
-
+        # plt.savefig("../res/demo.png")
         plt.show()
-        plt.cla()

@@ -26,7 +26,8 @@
                 </name>
 
                 <save_path>
-                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    D:\models\HDANet\camvid224x224\1HAM-->
+                    D:\models\HDANet\camvid360x480\1HAM
 <!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_1HAM-->
                 </save_path>
 
@@ -41,7 +42,8 @@
                 </name>
 
                 <save_path>
-                    D:\models\HDANet\camvid360x480\2HAM\HDAnet_50.pth
+<!--                    D:\models\HDANet\camvid224x224\2HAM-->
+                    D:\models\HDANet\camvid360x480\2HAM
 <!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_2HAM-->
                 </save_path>
 
@@ -56,7 +58,8 @@
                 </name>
 
                 <save_path>
-                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    D:\models\HDANet\camvid224x224\3HAM-->
+                    D:\models\HDANet\camvid360x480\3HAM
 <!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_3HAM-->
                 </save_path>
 
@@ -71,7 +74,8 @@
                 </name>
 
                 <save_path>
-                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    D:\models\HDANet\camvid224x224\4HAM-->
+                    D:\models\HDANet\camvid360x480\4HAM
 <!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_4HAM-->
                 </save_path>
 
@@ -85,7 +89,8 @@
                     HANet_5HAM
                 </name>
                 <save_path>
-                    D:\models\HDANet\camvid360x480\1HAM\HDAnet_50.pth
+<!--                    D:\models\HDANet\camvid224x224\5HAM-->
+                    D:\models\HDANet\camvid360x480\5HAM
 <!--                    /media/xu/移动硬盘/HDANet/dataset/camvid/checkpoints/360x480/HDANet_5HAM-->
                 </save_path>
 
