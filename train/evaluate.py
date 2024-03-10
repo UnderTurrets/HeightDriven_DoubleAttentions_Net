@@ -12,7 +12,6 @@ class test:    #定义初始函数类
         self.confusion_matrix = np.bincount(self.num_class * self.true[k].astype(int) + self.pred[k], minlength=self.num_class ** 2).reshape(self.num_class, self.num_class)#求混淆矩阵的核心代码
 
 
-##D:\models\HDANet\camvid360x480\1HAM
     #PA 像素准确度
     def PA(self):
         pa = np.diag(self.confusion_matrix).sum() / self.confusion_matrix.sum()
@@ -51,19 +50,28 @@ class test:    #定义初始函数类
 
 
 if __name__ =="__main__":
-    from db.camvid import test_loader
-    from db.camvid import COLORMAP as Cam_COLORMAP
-    from db.camvid import CLASSES as Cam_CLASSES
+    from db.camvid import test_loader,train_loader,val_loader
+    from db.camvid import COLORMAP
+    from db.camvid import CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
     import numpy as np
     import torch
-    from network.HDAnet import model_1HAM,model_5HAM
+    from network.HDAnet import model_1HAM,model_2HAM,model_3HAM,model_4HAM,model_5HAM
 
+
+
+
+
+    total_PA = 0
+    average_PA = 0
+    total_FWIOU = 0
+    average_FWIOU = 0
+    num = 0
     for index, (img, label) in enumerate(test_loader):
         img = img.to(torch.device('cuda:0'))
         out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        # out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
 
         _, figs = plt.subplots(img.shape[0], 3)
@@ -86,29 +94,42 @@ if __name__ =="__main__":
             out_1_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
             out_2_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
 
-            for j in range(len(Cam_COLORMAP)):
-                colored_mask[label[i] == j] = Cam_COLORMAP[j]
-                out_1_mask[out_1[i] == j] = Cam_COLORMAP[j]
-                out_2_mask[out_2[i] == j] = Cam_COLORMAP[j]
+            for j in range(len(COLORMAP)):
+                colored_mask[label[i] == j] = COLORMAP[j]
+                out_1_mask[out_1[i] == j] = COLORMAP[j]
+                # out_2_mask[out_2[i] == j] = COLORMAP[j]
 
-            figs[i, 1].imshow(colored_mask)
-            figs[i, 1].axis('off')
-            figs[i, 2].imshow(out_2_mask)
-            figs[i, 2].axis('off')
+            # figs[i, 1].imshow(colored_mask)
+            # figs[i, 1].axis('off')
+            # figs[i, 2].imshow(out_1_mask)
+            # figs[i, 2].axis('off')
             # figs[i, 3].imshow(out_2_mask)
             # figs[i, 3].axis('off')
 
-            TEST = test(label[i], out_2[i], unique_values)
-            print(f'混淆矩阵:{TEST.confusion_matrix}')
-            print(f'像素准确度:{TEST.PA()}')
-            print(f'类别像素准确度{TEST.CPA()}')
-            print(f'平均像素准确度:{TEST.MPA()}')
-            print(f'交并比:{TEST.IOU()}')
-            print(f'平均交并比:{TEST.MIOU()}')
-            print(f'频率加权交并比:{TEST.FWIOU()}')
+            TEST = test(label[i].numpy(), out_1[i], num_unique_values)
 
-        plt.savefig("../res/demo.png", dpi=250)
-        plt.show()
+            total_PA +=TEST.PA()
+            total_FWIOU += TEST.FWIOU()
+            num += 1
+            average_PA = total_PA/num
+            average_FWIOU = total_FWIOU/num
+
+
+
+
+            # print(f'混淆矩阵:{TEST.confusion_matrix}')
+            print(f'此次像素准确度:{TEST.PA()}')
+            print(f'平均像素准确度:{average_PA}')
+
+            # print(f'类别像素准确度{TEST.CPA()}')
+            # print(f'平均像素准确度:{TEST.MPA()}')
+            # print(f'交并比:{TEST.IOU()}')
+            # print(f'平均交并比:{TEST.MIOU()}')
+
+            print(f'此次频率加权交并比:{TEST.FWIOU()}')
+            print(f'平均频率加权交并比:{average_FWIOU}')
+
+        # plt.show()
 
 
 

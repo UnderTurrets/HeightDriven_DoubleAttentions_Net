@@ -118,7 +118,7 @@ class HDAnet(nn.Module):
         super(HDAnet, self).__init__()
         # 将resnet50分为4个stage，其中stage4是最后一个stage
         self.ResNet50 = IntermediateLayerGetter(
-            resnet50(pretrained=False, replace_stride_with_dilation=[False, True, True]),
+            resnet50(pretrained=True, replace_stride_with_dilation=[False, True, True]),
             return_layers={'layer1': 'stage1', 'layer2': 'stage2', 'layer3': 'stage3', 'layer4': 'stage4'}
         )
 
@@ -246,9 +246,9 @@ model_5HAM = model_list[4]
 
 
 if __name__ == "__main__":
-    from db.camvid import test_loader
-    from db.camvid import COLORMAP as Cam_COLORMAP
-    from db.camvid import CLASSES as Cam_CLASSES
+    from db.camvid import train_loader,val_loader,test_loader
+    from db.camvid import COLORMAP
+    from db.camvid import CLASSES
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
     import numpy as np
@@ -292,17 +292,17 @@ if __name__ == "__main__":
     #     figs[0, 3].set_title("seg2")
     #     plt.show()
 
-    for index, (img, label) in enumerate(test_loader):
+    for index, (img, label) in enumerate(train_loader):
         img = img.to(torch.device('cuda:0'))
         out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
-        out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
+        out_2 = model_4HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
 
-        _, figs = plt.subplots(img.shape[0], 3)
+        _, figs = plt.subplots(img.shape[0], 4)
         figs[0, 0].set_title("Image")
         figs[0, 1].set_title("Ground-truth")
-        figs[0, 2].set_title("ours")
-        # figs[0, 3].set_title("seg2")
+        figs[0, 2].set_title("seg1")
+        figs[0, 3].set_title("seg2")
 
         for i in range(img.shape[0]):
             # Display original image
@@ -314,17 +314,17 @@ if __name__ == "__main__":
             out_1_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
             out_2_mask = np.zeros((label[i].shape[0], label[i].shape[1], 3), dtype=np.uint8)
 
-            for j in range(len(Cam_COLORMAP)):
-                colored_mask[label[i] == j] = Cam_COLORMAP[j]
-                out_1_mask[out_1[i] == j] = Cam_COLORMAP[j]
-                out_2_mask[out_2[i] == j] = Cam_COLORMAP[j]
+            for j in range(len(COLORMAP)):
+                colored_mask[label[i] == j] = COLORMAP[j]
+                out_1_mask[out_1[i] == j] = COLORMAP[j]
+                out_2_mask[out_2[i] == j] = COLORMAP[j]
 
             figs[i, 1].imshow(colored_mask)
             figs[i, 1].axis('off')
-            figs[i, 2].imshow(out_2_mask)
+            figs[i, 2].imshow(out_1_mask)
             figs[i, 2].axis('off')
-            # figs[i, 3].imshow(out_2_mask)
-            # figs[i, 3].axis('off')
+            figs[i, 3].imshow(out_2_mask)
+            figs[i, 3].axis('off')
 
-        plt.savefig("../res/demo.png",dpi=250)
+        plt.savefig("../res/camvid_segDemo360x480.png",dpi=250)
         plt.show()
