@@ -93,18 +93,18 @@ test_dataset = CityScapesDataset(
     os.path.join(cityscapes_path, 'gtFine_trainvaltest', 'test'),
 )
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=4, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=3, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=3, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=3, shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
 
     for index, (img, label) in enumerate(train_loader):
-        _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
+        _, figs = plt.subplots(img.shape[0], 2)
         figs[0, 0].set_title("Image")
-        figs[0, 1].set_title("Label")
+        figs[0, 1].set_title("Ground-truth")
 
         for i in range(img.shape[0]):
             # Display original image
@@ -121,4 +121,5 @@ if __name__ == "__main__":
             figs[i, 1].imshow(colored_mask)
             figs[i, 1].axis('off')
 
+        plt.savefig("../res/cityscapes_demo.png",dpi=250)
         plt.show()

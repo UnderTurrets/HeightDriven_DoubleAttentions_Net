@@ -246,7 +246,7 @@ model_5HAM = model_list[4]
 
 
 if __name__ == "__main__":
-    from db.camvid import val_loader
+    from db.camvid import test_loader
     from db.camvid import COLORMAP as Cam_COLORMAP
     from db.camvid import CLASSES as Cam_CLASSES
     import matplotlib.pyplot as plt
@@ -292,17 +292,17 @@ if __name__ == "__main__":
     #     figs[0, 3].set_title("seg2")
     #     plt.show()
 
-    for index, (img, label) in enumerate(val_loader):
+    for index, (img, label) in enumerate(test_loader):
         img = img.to(torch.device('cuda:0'))
         out_1 = model_1HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         out_2 = model_5HAM(img).max(dim=1)[1].squeeze(dim=1).cpu().data.numpy()
         img = img.to("cpu")
 
-        _, figs = plt.subplots(img.shape[0], 4, figsize=(10, 10))
+        _, figs = plt.subplots(img.shape[0], 3)
         figs[0, 0].set_title("Image")
-        figs[0, 1].set_title("Label")
-        figs[0, 2].set_title("seg1")
-        figs[0, 3].set_title("seg2")
+        figs[0, 1].set_title("Ground-truth")
+        figs[0, 2].set_title("ours")
+        # figs[0, 3].set_title("seg2")
 
         for i in range(img.shape[0]):
             # Display original image
@@ -321,10 +321,10 @@ if __name__ == "__main__":
 
             figs[i, 1].imshow(colored_mask)
             figs[i, 1].axis('off')
-            figs[i, 2].imshow(out_1_mask)
+            figs[i, 2].imshow(out_2_mask)
             figs[i, 2].axis('off')
-            figs[i, 3].imshow(out_2_mask)
-            figs[i, 3].axis('off')
+            # figs[i, 3].imshow(out_2_mask)
+            # figs[i, 3].axis('off')
 
-        # plt.savefig("../res/demo.png")
+        plt.savefig("../res/demo.png",dpi=250)
         plt.show()

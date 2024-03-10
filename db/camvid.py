@@ -97,9 +97,9 @@ test_dataset = CamVidDataset(
     os.path.join(camvid_path, 'valannot'),
 )
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
-test_loader = DataLoader(test_dataset,batch_size=4,shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=3, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=3, shuffle=True)
+test_loader = DataLoader(test_dataset,batch_size=3,shuffle=True)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -108,10 +108,12 @@ if __name__ == "__main__":
         unique_values = np.unique(label)
         num_unique_values = len(unique_values)
         print("Number of unique values in labels:", num_unique_values)
-        _, figs = plt.subplots(img.shape[0], 2, figsize=(10, 10))
+
+
+        _, figs = plt.subplots(img.shape[0], 2)
         # 在第一行图片上面添加标题
         figs[0, 0].set_title("Image")
-        figs[0, 1].set_title("Label")
+        figs[0, 1].set_title("Ground-truth")
 
         for i in range(img.shape[0]):
             figs[i, 0].imshow(img[i].permute(1, 2, 0))  # Original image
@@ -123,6 +125,7 @@ if __name__ == "__main__":
             figs[i, 1].imshow(colored_mask)
             figs[i, 1].axis('off')
 
+        plt.savefig("../res/camvid_demo.png", dpi=250)
         plt.show()
 
 
