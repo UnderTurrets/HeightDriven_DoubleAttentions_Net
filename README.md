@@ -1,5 +1,5 @@
 ﻿# 梗概
-这是一个使用了dual-attention network模块和height-attention-network模块，使用ResNet50作为骨干网络的图像语义分割项目。
+这是一个使用了dual-attention network模块和height-attention-network模块，使用ResNet50作为骨干网络的图像语义分割项目，暨湖南省大学生创新创业项目，作者为机器人学院机器人工程2202班徐涵。
 # 数据集
 ## 下载
 1. [Camvid数据集](https://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/)
