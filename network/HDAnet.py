@@ -243,7 +243,27 @@ model_3HAM = model_list[2]
 model_4HAM = model_list[3]
 model_5HAM = model_list[4]
 
+total_params = sum(p.numel() for p in IntermediateLayerGetter(
+                                                                resnet50(pretrained=True, replace_stride_with_dilation=[False, True, True]),
+                                                                return_layers={'layer1': 'stage1', 'layer2': 'stage2', 'layer3': 'stage3', 'layer4': 'stage4'}
+                                                             ).parameters()
+                   )
+print(f"Total number of parameters: {total_params}")
 
+total_params = sum(p.numel() for p in model_1HAM.parameters())
+print(f"Total number of parameters: {total_params}")
+
+total_params = sum(p.numel() for p in model_2HAM.parameters())
+print(f"Total number of parameters: {total_params}")
+
+total_params = sum(p.numel() for p in model_3HAM.parameters())
+print(f"Total number of parameters: {total_params}")
+
+total_params = sum(p.numel() for p in model_4HAM.parameters())
+print(f"Total number of parameters: {total_params}")
+
+total_params = sum(p.numel() for p in model_5HAM.parameters())
+print(f"Total number of parameters: {total_params}")
 
 if __name__ == "__main__":
     from db.camvid import train_loader,val_loader,test_loader
